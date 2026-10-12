@@ -135,7 +135,7 @@
       background: #1eb954;
     }
 
-    /* Form Screen */
+    /* Main Form Screen */
     #mainPortal {
       display: none;
     }
@@ -196,9 +196,10 @@
 
     .error-msg {
       color: #dc2626;
-      font-size: 0.85rem;
-      margin-top: 8px;
+      font-size: 0.88rem;
+      margin-top: 10px;
       display: none;
+      font-weight: 600;
     }
 
     .file-input {
@@ -225,16 +226,16 @@
       <div style="font-size: 2.2rem; color: var(--primary); margin-bottom: 8px;">
         <i class="fa-solid fa-lock"></i>
       </div>
-      <p style="font-size: 0.95rem; font-weight: 600;">పోర్టల్ యాక్సెస్ పిన్ నమోదు చేయండి</p>
+      <p style="font-size: 0.95rem; font-weight: 600;">పోర్టల్ యాక్సెస్ పిన్ (PIN) నమోదు చేయండి</p>
       
       <div class="pin-input-group">
-        <input type="password" id="accessPin" class="pin-input" maxlength="4" placeholder="••••" autocomplete="off">
+        <input type="password" id="accessPin" class="pin-input" maxlength="4" inputmode="numeric" placeholder="••••" autocomplete="off">
       </div>
       
-      <button class="btn btn-primary" onclick="verifyPin()">
+      <button type="button" class="btn btn-primary" onclick="verifyPin()">
         <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
       </button>
-      <div id="pinError" class="error-msg">తప్పుడు పిన్! దయచేసి మళ్లీ ప్రయత్నించండి.</div>
+      <div id="pinError" class="error-msg">తప్పుడు పిన్! దయచేసి సరైన పిన్ (1207) నమోదు చేయండి.</div>
     </div>
 
     <!-- Step 2: Main Revenue Service Portal -->
@@ -252,7 +253,7 @@
           </select>
         </div>
 
-        <!-- Contact & Name -->
+        <!-- Phone Number & Contact Picker -->
         <div class="form-group">
           <label><i class="fa-solid fa-phone"></i> ఫోన్ నంబర్:</label>
           <div class="input-wrapper">
@@ -263,6 +264,7 @@
           </div>
         </div>
 
+        <!-- Applicant Name -->
         <div class="form-group">
           <label><i class="fa-solid fa-user"></i> దరఖాస్తుదారుడి పేరు (Applicant Name):</label>
           <input type="text" id="applicantName" placeholder="దరఖాస్తుదారుడి పేరు నమోదు చేయండి" required>
@@ -289,4 +291,146 @@
               <option value="1">1 రోజు</option>
               <option value="2">2 రోజులు</option>
               <option value="3">3 రోజులు</option>
-              
+              <option value="4">4 రోజులు</option>
+              <option value="5">5 రోజులు</option>
+              <option value="6">6 రోజులు</option>
+              <option value="7">7 రోజులు</option>
+              <option value="8">8 రోజులు</option>
+              <option value="9">9 రోజులు</option>
+              <option value="10">10 రోజులు</option>
+            </select>
+            <input type="number" id="manualDays" placeholder="లేదా మాన్యువల్ డేస్" min="1" max="90" oninput="calculateDueDate(this.value)">
+          </div>
+        </div>
+
+        <!-- Calculated Target Date -->
+        <div class="form-group">
+          <label><i class="fa-regular fa-calendar-days"></i> నిర్ణీత గడువు తేదీ (Target Date):</label>
+          <input type="date" id="targetCalendar" required>
+        </div>
+
+        <!-- WhatsApp Button -->
+        <button type="submit" class="btn btn-whatsapp">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp లో మెసేజ్ పంపండి
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 1. PIN verification (Enter key + Trim + Error handling)
+  function verifyPin() {
+    const pinInput = document.getElementById("accessPin");
+    const enteredPin = pinInput.value.trim();
+    const errorEl = document.getElementById("pinError");
+    
+    if (enteredPin === "1207") {
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("mainPortal").style.display = "block";
+      errorEl.style.display = "none";
+      setDefaultDate();
+    } else {
+      errorEl.style.display = "block";
+      errorEl.innerText = "తప్పుడు పిన్! దయచేసి 1207 నమోదు చేయండి.";
+      pinInput.value = "";
+      pinInput.focus();
+    }
+  }
+
+  // Keypress listener: Enter నొక్కినా లాగిన్ అవుతుంది
+  document.addEventListener("DOMContentLoaded", function() {
+    const pinBox = document.getElementById("accessPin");
+    if (pinBox) {
+      pinBox.focus();
+      pinBox.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          verifyPin();
+        }
+      });
+    }
+  });
+
+  // 2. Default date (ఈ రోజు తేదీ సెట్ చేయడం)
+  function setDefaultDate() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("targetCalendar").value = today;
+  }
+
+  // 3. Web Contact Picker API (మొబైల్ ఫోన్ కాంటాక్ట్స్ ఎంచుకోవడం)
+  async function pickContact() {
+    if ('contacts' in navigator && 'ContactsManager' in window) {
+      try {
+        const props = ['name', 'tel'];
+        const opts = { multiple: false };
+        const contacts = await navigator.contacts.select(props, opts);
+        
+        if (contacts && contacts.length > 0) {
+          const contact = contacts[0];
+          if (contact.name && contact.name.length > 0) {
+            document.getElementById("applicantName").value = contact.name[0];
+          }
+          if (contact.tel && contact.tel.length > 0) {
+            let cleanPhone = contact.tel[0].replace(/[^0-9]/g, '');
+            if (cleanPhone.length > 10) cleanPhone = cleanPhone.slice(-10);
+            document.getElementById("phone").value = cleanPhone;
+          }
+        }
+      } catch (ex) {
+        console.log("కాంటాక్ట్ ఎంపిక రద్దు చేయబడింది:", ex);
+      }
+    } else {
+      alert("మీ బ్రౌజర్‌లో Contact Picker సపోర్ట్ లేదు. నేరుగా వివరాలు ఎంటర్ చేయండి.");
+    }
+  }
+
+  // 4. గడువు రోజుల ప్రకారం తేదీ ఆటోమేటిక్‌గా మారడం
+  function applyPresetDays(val) {
+    document.getElementById("manualDays").value = val;
+    calculateDueDate(val);
+  }
+
+  function calculateDueDate(days) {
+    const count = parseInt(days);
+    if (!isNaN(count) && count >= 0) {
+      const d = new Date();
+      d.setDate(d.getDate() + count);
+      const formatted = d.toISOString().split('T')[0];
+      document.getElementById("targetCalendar").value = formatted;
+    }
+  }
+
+  // 5. WhatsApp మెసేజ్ బిల్డ్ చేసి పంపడం
+  function sendToWhatsApp(e) {
+    e.preventDefault();
+
+    const service = document.getElementById("serviceType").value;
+    const phone = document.getElementById("phone").value.trim();
+    const name = document.getElementById("applicantName").value.trim();
+    const appNo = document.getElementById("appNumber").value.trim();
+    const days = document.getElementById("manualDays").value || "N/A";
+    const dueDate = document.getElementById("targetCalendar").value;
+
+    const message = 
+`🏛️ *TAHSILDAR OFFICE, PEDDAVADUGUR* 🏛️
+-----------------------------------
+📋 *సర్వీస్ రకం:* ${service}
+👤 *దరఖాస్తుదారు:* ${name}
+🔢 *అప్లికేషన్ నం:* ${appNo}
+⏳ *గడువు రోజులు:* ${days} రోజులు
+📅 *పరిష్కార గడువు తేదీ:* ${dueDate}
+-----------------------------------
+_గమనిక: మీ దరఖాస్తు పరిశీలనలో ఉంది._`;
+
+    let formattedPhone = phone.replace(/[^0-9]/g, '');
+    if (formattedPhone.length === 10) {
+      formattedPhone = "91" + formattedPhone;
+    }
+
+    const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+</script>
+</body>
+</html>
