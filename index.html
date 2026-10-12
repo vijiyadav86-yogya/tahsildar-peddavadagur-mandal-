@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tahsildar Office - Peddavadagur Mandal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a56db;
+      --primary-hover: #1e429f;
+      --success: #0e9f6e;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #1f2a37;
+      --text-muted: #6b7280;
+      --border: #d1d5db;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 560px;
+      padding: 24px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+    }
+    .header h2 {
+      font-size: 1.25rem;
+      color: #111827;
+      font-weight: 700;
+    }
+    .header p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26,86,219,0.15);
+    }
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+      padding: 0 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .btn-whatsapp:hover {
+      background: #1eb956;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      background: #e0f2fe;
+      color: #0369a1;
+      border-radius: 6px;
+      margin-top: 4px;
+    }
+    #auth-screen {
+      display: block;
+      text-align: center;
+    }
+    #main-app {
+      display: none;
+    }
+    .error {
+      color: #e02424;
+      font-size: 0.85rem;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PIN Protection Screen -->
+  <div class="card" id="auth-screen">
+    <div class="header">
+      <h2>తహశీల్దార్ కార్యాలయం, పెద్దవడుగూరు</h2>
+      <p>Secure Portal Login</p>
+    </div>
+    <div class="form-group" style="text-align: left;">
+      <label for="pinInput">Enter 4-Digit Security PIN:</label>
+      <input type="password" id="pinInput" maxlength="4" placeholder="Enter PIN (1207)" style="text-align: center; font-size: 1.25rem; letter-spacing: 4px;">
+      <p id="pinError" class="error" style="display: none;">తప్పుడు పిన్! దయచేసి సరైన పిన్ నమోదు చేయండి.</p>
+    </div>
+    <button class="btn-primary" onclick="verifyPin()">Login to Portal</button>
+  </div>
+
+  <!-- Main Application Form -->
+  <div class="card" id="main-app">
+    <div class="header">
+      <h2>Welcome to Tahsildar Office</h2>
+      <p>Peddavadagur Mandal - Revenue Records & Notice Portal</p>
+    </div>
+
+    <!-- Revenue Service Selection -->
+    <div class="form-group">
+      <label for="serviceType">రెవెన్యూ అంశం ఎంచుకోండి (Revenue Item):</label>
+      <select id="serviceType">
+        <option value="ROR">ROR (Records of Rights)</option>
+        <option value="PGRS">PGRS (Spandana / Public Grievance)</option>
+        <option value="మండల దరఖాస్తు (Mandala Application)">మండల దరఖాస్తు (Mandala Application)</option>
+        <option value="ఇతరములు (Others)">ఇతరములు (Others)</option>
+      </select>
+    </div>
+
+    <!-- Contact Selection (Native Contact Picker + Manual fallback) -->
+    <div class="form-group">
+      <label>దరఖాస్తుదారుని వివరాలు (Applicant Details):</label>
+      <div class="input-row">
+        <input type="text" id="applicantName" placeholder="పేరు (Applicant Name)">
+        <button type="button" class="btn-secondary" onclick="pickContact()" title="ఫోన్ కాంటాక్ట్స్ నుండి తీసుకోండి">
+          👤 Pick Contact
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="applicantPhone">మొబైల్ నంబర్ (WhatsApp Number):</label>
+      <input type="tel" id="applicantPhone" placeholder="10 అంకెల మొబైల్ నంబర్" maxlength="10">
+    </div>
+
+    <!-- Application Number -->
+    <div class="form-group">
+      <label for="appNumber">దరఖాస్తు నంబర్ (Application No.):</label>
+      <input type="text" id="appNumber" placeholder="ఉదా: AP-PVD-2026-XXXX">
+    </div>
+
+    <!-- File Upload -->
+    <div class="form-group">
+      <label for="fileUpload">ఫైల్ అప్‌లోడ్ (PDF లేదా JPG):</label>
+      <input type="file" id="fileUpload" accept=".pdf, image/jpeg, image/png">
+    </div>
+
+    <!-- Due Days & Dynamic Calendar -->
+    <div class="form-group">
+      <label for="daysSelect">గడువు రోజులు (Due Days):</label>
+      <div class="input-row">
+        <select id="daysSelect" onchange="updateDueDate(this.value)">
+          <option value="1">1 రోజు</option>
+          <option value="2">2 రోజులు</option>
+          <option value="3">3 రోజులు</option>
+          <option value="4">4 రోజులు</option>
+          <option value="5">5 రోజులు</option>
+          <option value="6">6 రోజులు</option>
+          <option value="7" selected>7 రోజులు</option>
+          <option value="8">8 రోజులు</option>
+          <option value="9">9 రోజులు</option>
+          <option value="10">10 రోజులు</option>
+          <option value="custom">Manual Entry...</option>
+        </select>
+        <input type="number" id="manualDays" placeholder="రోజులు" style="display:none; width: 100px;" min="1" oninput="updateDueDate(this.value)">
+      </div>
+    </div>
+
+    <!-- Calculated Due Date -->
+    <div class="form-group">
+      <label for="dueDate">గడువు తేదీ (Calculated Due Date):</label>
+      <input type="date" id="dueDate">
+      <span class="badge" id="dateTextInfo"></span>
+    </div>
+
+    <!-- WhatsApp Dispatch Action -->
+    <button class="btn-whatsapp" onclick="sendWhatsAppNotification()">
+      <span>📲 Send WhatsApp Notification</span>
+    </button>
+  </div>
+
+  <script>
+    // 1. PIN Verification (1207)
+    function verifyPin() {
+      const pin = document.getElementById('pinInput').value;
+      if (pin === '1207') {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        updateDueDate(7); // Default 7 days calculation
+      } else {
+        document.getElementById('pinError').style.display = 'block';
+      }
+    }
+
+    // 2. Contact Picker API Integration
+    async function pickContact() {
+      const isSupported = ('contacts' in navigator && 'ContactsManager' in window);
+      if (isSupported) {
+        try {
+          const props = ['name', 'tel'];
+          const opts = { multiple: false };
+          const contacts = await navigator.contacts.select(props, opts);
+          if (contacts.length > 0) {
+            const contact = contacts[0];
+            if (contact.name && contact.name[0]) {
+              document.getElementById('applicantName').value = contact.name[0];
+            }
+            if (contact.tel && contact.tel[0]) {
+              // Clean spaces or special characters from phone
+              const rawPhone = contact.tel[0].replace(/[^0-9]/g, '');
+              const cleanPhone = rawPhone.length > 10 ? rawPhone.slice(-10) : rawPhone;
+              document.getElementById('applicantPhone').value = cleanPhone;
+            }
+          }
+        } catch (ex) {
+          console.warn("Contact picker closed or failed:", ex);
+        }
+      } else {
+        alert("గమనిక: Contact Picker API మీ మొబైల్ బ్రౌజర్ (Chrome Mobile) లో మాత్రమే సపోర్ట్ చేస్తుంది. దయచేసి పేరు, ఫోన్ నేరుగా టైప్ చేయండి.");
+      }
+    }
+
+    // 3. Dynamic Days & Calendar Calculation
+    function updateDueDate(daysVal) {
+      const manualInput = document.getElementById('manualDays');
+      let days = parseInt(daysVal, 10);
+
+      if (daysVal === 'custom') {
+        manualInput.style.display = 'block';
+        days = parseInt(manualInput.value, 10) || 0;
+      } else if (document.getElementById('daysSelect').value !== 'custom') {
+        manualInput.style.display = 'none';
+      }
+
+      if (isNaN(days) || days < 0) days = 0;
+
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + days);
+
+      const yyyy = targetDate.getFullYear();
+      const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(targetDate.getDate()).padStart(2, '0');
+
+      const formattedDate = `${yyyy}-${mm}-${dd}`;
+      document.getElementById('dueDate').value = formattedDate;
+      document.getElementById('dateTextInfo').innerText = `గడువు చివరి తేదీ: ${dd}/${mm}/${yyyy}`;
+    }
+
+    // 4. Send Message via WhatsApp Web / App
+    function sendWhatsAppNotification() {
+      const phone = document.getElementById('applicantPhone').value.trim();
+      const name = document.getElementById('applicantName').value.trim();
+      const service = document.getElementById('serviceType').value;
+      const appNo = document.getElementById('appNumber').value.trim();
+      const dueDate = document.getElementById('dueDate').value;
+
+      if (!phone || phone.length < 10) {
+        alert("దయచేసి సరైన 10 అంకెల మొబైల్ నంబర్ నమోదు చేయండి.");
+        return;
+      }
+
+      const formattedDueDate = dueDate ? dueDate.split('-').reverse().join('-') : 'N/A';
+
+      // WhatsApp Message Format
+      const message = 
+`*తహశీల్దార్ కార్యాలయం, పెద్దవడుగూరు మండలం*
+----------------------------------------
+నమస్కారం *${name || 'దరఖాస్తుదారు'}*,
+
+మీ రెవెన్యూ దరఖాస్తు వివరాలు:
+📌 *విషయం:* ${service}
+📄 *అప్లికేషన్ నం:* ${appNo || 'Under Processing'}
+⏳ *పరిష్కార గడువు తేదీ:* ${formattedDueDate}
+
+మీ దరఖాస్తును పరిశీలించడం జరుగుతోంది. నిర్ణీత గడువులోగా తగిన చర్యలు తీసుకోబడును.
+
+- తహశీల్దార్, పెద్దవడుగూరు.`;
+
+      const encodedMsg = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/91${phone}?text=${encodedMsg}`;
+      window.open(whatsappUrl, '_blank');
+    }
+  </script>
+</body>
+</html>
