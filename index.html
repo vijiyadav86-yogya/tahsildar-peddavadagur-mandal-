@@ -29,7 +29,14 @@
       padding: 0;
       font-family: 'Plus Jakarta Sans', 'Noto Sans Telugu', sans-serif;
     }
-
+     <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker Registered'))
+      .catch((err) => console.error('Service Worker Error:', err));
+  }
+</script>
+   
     body {
       background-color: var(--bg);
       color: var(--text);
