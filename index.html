@@ -1,109 +1,495 @@
-// మీ Access Token మరియు Phone Number ID
-const META_ACCESS_TOKEN = "EAAN2iZCXpMLoBSqAgZASu8Dd5ZCFiuHAvrwQxQtZBmClrNd97E4m8qFAquQXXj6ZA7p6epPU6fFoV8L1skUBw2nGnRyH3tILXpu3q6HZCZBuWEIZAQzJQOHIzEAPOYR89eX0MMC0Bw2WMLtFuNnw5LoPUgSxvZAbB8EDiBgpLASbxhrmIjZCZBVJtpXy9OTurNvDzvx72RoyZB08A2uF8woVNERT64DxBs9ibTZAAHf8GLoxJZBqup8UxAZBe8OSYm0EblOqunMGkNRXgMuu6Ic1ahV7BfjnAJ7";
-const META_PHONE_NUMBER_ID = "1354520314415672"; // మీ స్క్రీన్‌పై ఉన్న అసలైన Phone Number ID
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tahsildar Office - Peddavadugur Mandal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-accent: #2563eb;
+      --surface: #ffffff;
+      --bg: #f8fafc;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --radius: 12px;
+    }
 
-async function sendNotice() {
-  let phone = document.getElementById('recipientPhone').value.trim();
-  const textMsg = document.getElementById('previewCard').textContent;
-  const fileInput = document.getElementById('docUpload');
-  const file = fileInput.files[0];
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Telugu', sans-serif;
+    }
 
-  if (!phone) {
-    alert("దయచేసి స్వీకర్త ఫోన్ నంబర్ నమోదు చేయండి.");
-    return;
-  }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-  // భారతదేశపు కంట్రీ కోడ్ (91) సరిచూసుకోవడం
-  phone = phone.replace(/[^0-9]/g, '');
-  if (phone.length === 10) {
-    phone = '91' + phone;
-  }
+    /* Modal / Login overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
 
-  const sendBtn = document.querySelector('.btn-primary');
-  const originalBtnText = sendBtn.innerHTML;
-  sendBtn.innerHTML = "⏳ పంపుతోంది... దయచేసి వేచి ఉండండి...";
-  sendBtn.disabled = true;
+    .modal-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      text-align: center;
+    }
 
-  try {
-    let mediaId = null;
+    .header-bar {
+      background: var(--primary);
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
 
-    // 1. ఒకవేళ PDF లేదా JPG ఫైల్ జతచేసి ఉంటే Meta సర్వర్‌కు అప్‌లోడ్ చేయడం
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("type", file.type || "application/pdf");
-      formData.append("messaging_product", "whatsapp");
+    .container {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex-grow: 1;
+    }
 
-      const uploadRes = await fetch(`https://graph.facebook.com/v20.0/${META_PHONE_NUMBER_ID}/media`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${META_ACCESS_TOKEN}`
-        },
-        body: formData
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .contact-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .quick-days {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .day-pill {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .day-pill.active {
+      background: var(--primary-accent);
+      color: white;
+      border-color: var(--primary-accent);
+    }
+
+    .preview-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      white-space: pre-wrap;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      font-family: inherit;
+      color: #1e293b;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: #25d366;
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1rem;
+    }
+
+    .btn-primary:hover {
+      background: #22c55e;
+    }
+
+    .error-text {
+      color: var(--danger);
+      font-size: 0.875rem;
+      margin-top: 8px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Password Authentication Dialog -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <h2 style="margin-bottom: 8px; color: var(--primary);">కార్యాలయ లాగిన్</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Tahsildar Office, Peddavadugur Mandal</p>
+      
+      <div class="form-group" style="text-align: left;">
+        <label for="passInput">పాస్‌వర్డ్ నమోదు చేయండి</label>
+        <input type="password" id="passInput" placeholder="••••" autocomplete="off">
+      </div>
+      <button class="btn-primary" style="background: var(--primary);" onclick="verifyPass()">ప్రవేశించండి</button>
+      <div id="authError" class="error-text">Contact Admin (సరైన పాస్‌వర్డ్ నమోదు చేయండి)</div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header-bar">
+    <div>
+      <h3 style="font-weight: 700;">తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు</h3>
+      <p style="font-size: 0.8rem; opacity: 0.9;">రెవెన్యూ అర్జీలు & PGRS నివేదిక నిర్వహణ వ్యవస్థ</p>
+    </div>
+    <span style="background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem;">అనంతపురము జిల్లా</span>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    
+    <!-- Entry Form -->
+    <div class="card">
+      <h3 style="margin-bottom: 16px; color: var(--primary);">వివరాల నమోదు</h3>
+      
+      <div class="form-group">
+        <label>రెవెన్యూ విభాగం / ఐటమ్</label>
+        <select id="itemSelect" onchange="renderPreview()">
+          <option value="ROR">ROR</option>
+          <option value="PGRS">PGRS</option>
+          <option value="మండల దరఖాస్తు">MANDALA APPLICATION</option>
+          <option value="ఇతరములు">ఇతరములు</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>VRO / అధికారి వివరాలు</label>
+        <div class="contact-row">
+          <input type="text" id="recipientName" placeholder="పేరు (ఉదా: Vijay Yadav Revenue)" oninput="renderPreview()">
+          <button class="btn-icon" type="button" title="ఫోన్ కాంటాక్ట్ ఎంచుకోండి" onclick="pickContact()">
+            📱
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>ఫోన్ నంబర్</label>
+        <input type="tel" id="recipientPhone" placeholder="ఉదా: 9876543210" oninput="renderPreview()">
+      </div>
+
+      <div class="form-group">
+        <label>రిఫరెన్స్ / అప్లికేషన్ నంబర్</label>
+        <input type="text" id="refNo" placeholder="ఉదా: F-8/2026/నోటీస్-12" oninput="renderPreview()">
+      </div>
+
+      <div class="form-group">
+        <label>అర్జీ / పత్రం అప్‌లోడ్ (PDF లేదా JPG)</label>
+        <input type="file" id="docUpload" accept=".pdf,image/jpeg,image/png">
+      </div>
+
+      <div class="form-group">
+        <label>గడువు రోజులు (Days)</label>
+        <input type="number" id="manualDays" value="3" min="1" max="90" oninput="updateDays(this.value)">
+        
+        <div class="quick-days" id="quickDays"></div>
+      </div>
+
+      <div class="form-group">
+        <label>పరిష్కార గడువు తేదీ (ఆటోమేటిక్ గణన)</label>
+        <input type="date" id="dueDateInput" readonly style="background: #f1f5f9; cursor: not-allowed;">
+      </div>
+    </div>
+
+    <!-- Live Preview & WhatsApp Trigger -->
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <h3 style="margin-bottom: 16px; color: var(--primary);">సందేశ ప్రివ్యూ</h3>
+        <div id="previewCard" class="preview-box"></div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <button class="btn-primary" onclick="sendNotice()">
+          📤 WhatsApp ద్వారా నోటీస్ పంపండి
+        </button>
+        <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 8px;">
+          *Meta Cloud API ద్వారా నేరుగా పంపబడుతుంది.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // 1. Password Verification
+    function verifyPass() {
+      const pass = document.getElementById('passInput').value;
+      const err = document.getElementById('authError');
+      if (pass === '1207') {
+        document.getElementById('authModal').style.display = 'none';
+      } else {
+        err.style.display = 'block';
+      }
+    }
+
+    // 2. Setup Days Pills (1 to 10)
+    const quickDaysContainer = document.getElementById('quickDays');
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `day-pill ${i === 3 ? 'active' : ''}`;
+      btn.textContent = `${i} d`;
+      btn.onclick = () => updateDays(i);
+      quickDaysContainer.appendChild(btn);
+    }
+
+    function updateDays(days) {
+      days = parseInt(days) || 1;
+      document.getElementById('manualDays').value = days;
+      
+      document.querySelectorAll('.day-pill').forEach((pill, idx) => {
+        pill.classList.toggle('active', (idx + 1) === days);
       });
 
-      const uploadData = await uploadRes.json();
-      if (uploadData.error) {
-        throw new Error("ఫైల్ అప్‌లోడ్ విఫలమైంది: " + uploadData.error.message);
-      }
-      mediaId = uploadData.id;
+      const today = new Date();
+      today.setDate(today.getDate() + days);
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      
+      document.getElementById('dueDateInput').value = `${yyyy}-${mm}-${dd}`;
+      renderPreview();
     }
 
-    // 2. WhatsApp API Payload తయారుచేయడం
-    let payload = {
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to: phone
-    };
-
-    if (mediaId) {
-      const isPdf = file.type.includes("pdf") || file.name.endsWith('.pdf');
-      if (isPdf) {
-        payload.type = "document";
-        payload.document = {
-          id: mediaId,
-          caption: textMsg,
-          filename: file.name
-        };
+    // 3. Contact Picker API
+    async function pickContact() {
+      if ('contacts' in navigator && 'ContactsManager' in window) {
+        try {
+          const props = ['name', 'tel'];
+          const contacts = await navigator.contacts.select(props, { multiple: false });
+          if (contacts.length > 0) {
+            const c = contacts[0];
+            if (c.name && c.name[0]) document.getElementById('recipientName').value = c.name[0];
+            if (c.tel && c.tel[0]) {
+              let clean = c.tel[0].replace(/[^0-9]/g, '');
+              if (!clean.startsWith('91') && clean.length === 10) clean = '91' + clean;
+              document.getElementById('recipientPhone').value = clean;
+            }
+            renderPreview();
+          }
+        } catch (err) {
+          alert("కాంటాక్ట్స్ యాక్సెస్ లభించలేదు. దయచేసి మాన్యువల్‌గా నమోదు చేయండి.");
+        }
       } else {
-        payload.type = "image";
-        payload.image = {
-          id: mediaId,
-          caption: textMsg
-        };
+        alert("మీ బ్రౌజర్ Contact Picker కి మద్దతు ఇవ్వడం లేదు. దయచేసి వివరాలను నేరుగా టైప్ చేయండి.");
       }
-    } else {
-      payload.type = "text";
-      payload.text = {
-        preview_url: false,
-        body: textMsg
-      };
     }
 
-    // 3. వాట్సాప్ మెసేజ్ పంపడం
-    const sendRes = await fetch(`https://graph.facebook.com/v20.0/${META_PHONE_NUMBER_ID}/messages`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${META_ACCESS_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
+    // 4. Render Live Preview
+    function renderPreview() {
+      const item = document.getElementById('itemSelect').value;
+      const name = document.getElementById('recipientName').value || 'Vijay Yadav Revenue';
+      const ref = document.getElementById('refNo').value || 'F-8/2026/నోటీస్-12';
+      const date = document.getElementById('dueDateInput').value;
 
-    const sendData = await sendRes.json();
+      const message = `*తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*
+━━━━━━━━━━━━━━━━━━━━
+📌 *ఆదేశాలు*
 
-    if (sendData.error) {
-      throw new Error(sendData.error.message);
+👤 *గ్రహీత:* ${name}
+📂 *విభాగం:* ${item}
+📄 *రిఫరెన్స్ నంబర్:* ${ref}
+📅 *పరిష్కార గడువు తేదీ:* ${date}
+
+⚠️ *గమనిక:* నిర్ణీత గడువులోగా తగిన నివేదికను కార్యాలయంలో సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
+
+      document.getElementById('previewCard').textContent = message;
     }
 
-    alert("✅ మెసేజ్ మరియు ఫైల్ విజయవంతంగా పంపబడింది!");
-    fileInput.value = "";
+    // 5. Meta WhatsApp Cloud API Details
+    const META_ACCESS_TOKEN = "EAAN2iZCXpMLoBSqAgZASu8Dd5ZCFiuHAvrwQxQtZBmClrNd97E4m8qFAquQXXj6ZA7p6epPU6fFoV8L1skUBw2nGnRyH3tILXpu3q6HZCZBuWEIZAQzJQOHIzEAPOYR89eX0MMC0Bw2WMLtFuNnw5LoPUgSxvZAbB8EDiBgpLASbxhrmIjZCZBVJtpXy9OTurNvDzvx72RoyZB08A2uF8woVNERT64DxBs9ibTZAAHf8GLoxJZBqup8UxAZBe8OSYm0EblOqunMGkNRXgMuu6Ic1ahV7BfjnAJ7";
+    const META_PHONE_NUMBER_ID = "1354520314415672";
 
-  } catch (error) {
-    console.error("Meta API Error:", error);
-    alert("❌ మెసేజ్ వెళ్ళలేదు:\n" + error.message);
-  } finally {
-    sendBtn.innerHTML = originalBtnText;
-    sendBtn.disabled = false;
-  }
-}
+    async function sendNotice() {
+      let phone = document.getElementById('recipientPhone').value.trim();
+      const textMsg = document.getElementById('previewCard').textContent;
+      const fileInput = document.getElementById('docUpload');
+      const file = fileInput.files[0];
+
+      if (!phone) {
+        alert("దయచేసి స్వీకర్త ఫోన్ నంబర్ నమోదు చేయండి.");
+        return;
+      }
+
+      phone = phone.replace(/[^0-9]/g, '');
+      if (phone.length === 10) {
+        phone = '91' + phone;
+      }
+
+      const sendBtn = document.querySelector('.btn-primary');
+      const originalBtnText = sendBtn.innerHTML;
+      sendBtn.innerHTML = "⏳ పంపుతోంది... దయచేసి వేచి ఉండండి...";
+      sendBtn.disabled = true;
+
+      try {
+        let mediaId = null;
+
+        if (file) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("type", file.type || "application/pdf");
+          formData.append("messaging_product", "whatsapp");
+
+          const uploadRes = await fetch(`https://graph.facebook.com/v20.0/${META_PHONE_NUMBER_ID}/media`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${META_ACCESS_TOKEN}`
+            },
+            body: formData
+          });
+
+          const uploadData = await uploadRes.json();
+          if (uploadData.error) {
+            throw new Error("ఫైల్ అప్‌లోడ్ విఫలమైంది: " + uploadData.error.message);
+          }
+          mediaId = uploadData.id;
+        }
+
+        let payload = {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: phone
+        };
+
+        if (mediaId) {
+          const isPdf = file.type.includes("pdf") || file.name.endsWith('.pdf');
+          if (isPdf) {
+            payload.type = "document";
+            payload.document = {
+              id: mediaId,
+              caption: textMsg,
+              filename: file.name
+            };
+          } else {
+            payload.type = "image";
+            payload.image = {
+              id: mediaId,
+              caption: textMsg
+            };
+          }
+        } else {
+          payload.type = "text";
+          payload.text = {
+            preview_url: false,
+            body: textMsg
+          };
+        }
+
+        const sendRes = await fetch(`https://graph.facebook.com/v20.0/${META_PHONE_NUMBER_ID}/messages`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${META_ACCESS_TOKEN}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const sendData = await sendRes.json();
+
+        if (sendData.error) {
+          throw new Error(sendData.error.message);
+        }
+
+        alert("✅ మెసేజ్ మరియు ఫైల్ విజయవంతంగా పంపబడింది!");
+        fileInput.value = "";
+
+      } catch (error) {
+        console.error("Meta API Error:", error);
+        alert("❌ మెసేజ్ వెళ్ళలేదు:\n" + error.message);
+      } finally {
+        sendBtn.innerHTML = originalBtnText;
+        sendBtn.disabled = false;
+      }
+    }
+
+    // Initialize defaults
+    updateDays(3);
+  </script>
+</body>
+</html>
