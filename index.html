@@ -29,80 +29,21 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 10px;
             color: var(--text);
         }
 
-        /* 1. లాగిన్ బాక్స్ */
-        #auth-modal {
-            background: var(--card);
-            padding: 28px 20px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        .auth-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 6px;
-        }
-
-        .auth-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .auth-input {
-            width: 100%;
-            padding: 12px;
-            font-size: 1.3rem;
-            letter-spacing: 6px;
-            text-align: center;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            outline: none;
-            margin-bottom: 14px;
-        }
-
-        .auth-input:focus {
-            border-color: var(--primary-light);
-        }
-
-        .auth-btn {
-            width: 100%;
-            padding: 13px;
-            background: var(--primary);
-            color: #ffffff;
-            font-size: 1rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .error-msg {
-            color: var(--danger);
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-top: 14px;
-            display: none;
-        }
-
-        /* 2. మెయిన్ అప్లికేషన్ */
+        /* ప్రధాన పోర్టల్ కంటైనర్ - నేరుగా డిస్‌ప్లే అవుతుంది */
         #main-app {
-            display: none; /* లాగిన్ అయ్యాకే కనపడుతుంది */
             width: 100%;
             max-width: 600px;
             background: var(--card);
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            margin-top: 6px;
+            margin-bottom: 20px;
         }
 
         .app-header {
@@ -149,6 +90,7 @@
             border-radius: 8px;
             font-size: 0.88rem;
             outline: none;
+            background-color: #ffffff;
         }
 
         .contact-picker-wrapper {
@@ -319,18 +261,7 @@
 </head>
 <body>
 
-    <!-- 1. పిన్ లాగిన్ స్క్రీన్ -->
-    <div id="auth-modal">
-        <div class="auth-title">🏛️ Welcome Tahsildar Office</div>
-        <div class="auth-subtitle">Peddavadugur Mandal Revenue Portal</div>
-        
-        <input type="password" id="access-code" class="auth-input" placeholder="••••" maxlength="8" inputmode="numeric">
-        <button type="button" class="auth-btn" id="login-submit-btn">అధికారిక లాగిన్</button>
-        
-        <div id="auth-error" class="error-msg">Password wrong! contact Admin</div>
-    </div>
-
-    <!-- 2. ప్రధాన పోర్టల్ -->
+    <!-- ప్రధాన పోర్టల్ (ఎలాంటి లాగిన్/పాస్‌వర్డ్ లేకుండా నేరుగా ఓపెన్ అవుతుంది) -->
     <div id="main-app">
         <div class="app-header">
             <h1>⚖️ తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు</h1>
@@ -338,7 +269,7 @@
         </div>
 
         <div class="app-body">
-            <!-- ఇన్‌పుట్స్ -->
+            <!-- విభాగం -->
             <div class="form-group">
                 <label>📁 విభాగం (Category)</label>
                 <select id="record-category" class="form-control" onchange="updatePreview()">
@@ -349,11 +280,13 @@
                 </select>
             </div>
 
+            <!-- గ్రహీత పేరు -->
             <div class="form-group">
                 <label>👤 గ్రహీత పేరు (VRO / సిబ్బంది / అర్జీదారు)</label>
                 <input type="text" id="receiver-name" class="form-control" placeholder="పేరు నమోదు చేయండి" value="Vijay Yadav Revenue" oninput="updatePreview()">
             </div>
 
+            <!-- మొబైల్ నంబర్ & ఫోన్ బుక్ -->
             <div class="form-group">
                 <label>📞 మొబైల్ నంబర్ (WhatsApp Number)</label>
                 <div class="contact-picker-wrapper">
@@ -363,16 +296,19 @@
                 </div>
             </div>
 
+            <!-- రిఫరెన్స్ నంబర్ -->
             <div class="form-group">
                 <label>📄 అప్లికేషన్ / అర్జీ నంబర్</label>
                 <input type="text" id="app-number" class="form-control" placeholder="ఉదా: F-8/2026/నోటీస్-12" value="F-8/2026/నోటీస్-12" oninput="updatePreview()">
             </div>
 
+            <!-- ఫైల్ అటాచ్‌మెంట్ -->
             <div class="form-group">
                 <label>📎 సంబంధిత ఫైల్ అటాచ్‌మెంట్ (PDF లేదా JPG)</label>
                 <input type="file" id="upload-file" class="form-control" accept=".pdf, image/*">
             </div>
 
+            <!-- గడువు రోజులు -->
             <div class="form-group">
                 <label>⏳ గడువు రోజులు & పరిష్కార తేదీ</label>
                 <div class="days-container">
@@ -388,6 +324,7 @@
                 </div>
             </div>
 
+            <!-- క్యాలెండర్ తేదీ -->
             <div class="form-group">
                 <label>📅 క్యాలెండర్ గడువు తేదీ</label>
                 <input type="date" id="due-date" class="form-control" onchange="updatePreview()">
@@ -415,7 +352,7 @@
     </div>
 
     <script>
-        // డేటాబేస్ (localStorage)
+        // లోకల్ స్టోరేజ్ నుండి హిస్టరీ డేటా
         var dispatchHistory = [];
         try {
             var saved = localStorage.getItem('peddavadugur_dispatches');
@@ -424,35 +361,11 @@
             dispatchHistory = [];
         }
 
-        // లాగిన్ ఫంక్షన్ (పిన్: 1207)
-        function doLogin() {
-            var passInput = document.getElementById('access-code');
-            var errorElem = document.getElementById('auth-error');
-            var entered = passInput.value.trim();
-
-            if (entered === "1207") {
-                errorElem.style.display = 'none';
-                document.getElementById('auth-modal').style.display = 'none';
-                document.getElementById('main-app').style.display = 'block';
-
-                initDate(3);
-                renderHistory();
-            } else {
-                errorElem.style.display = 'block';
-                passInput.value = '';
-                passInput.focus();
-            }
-        }
-
-        // లాగిన్ ఈవెంట్ లిజనర్స్
-        document.getElementById('login-submit-btn').onclick = doLogin;
-
-        document.getElementById('access-code').onkeydown = function(e) {
-            if (e.key === 'Enter' || e.keyCode === 13) {
-                e.preventDefault();
-                doLogin();
-            }
-        };
+        // పేజీ ఓపెన్ అవ్వగానే డేట్స్ మరియు హిస్టరీ లోడ్ అవుతాయి
+        window.addEventListener('DOMContentLoaded', function() {
+            initDate(3);
+            renderHistory();
+        });
 
         // గడువు తేదీ లెక్కింపు
         function initDate(daysToAdd) {
@@ -505,7 +418,7 @@
             }
         }
 
-        // మెసేజ్ ప్రివ్యూ
+        // మెసేజ్ ఫార్మాట్
         function getMessageText() {
             var category = document.getElementById('record-category').value;
             var receiver = document.getElementById('receiver-name').value.trim() || 'Vijay Yadav Revenue';
@@ -519,7 +432,7 @@
             document.getElementById('notice-preview-text').innerText = getMessageText();
         }
 
-        // డిస్పాచ్ (WhatsApp)
+        // వాట్సాప్ డిస్పాచ్
         async function dispatchOrder() {
             var phone = document.getElementById('receiver-phone').value.trim().replace(/\D/g, '');
             var receiver = document.getElementById('receiver-name').value.trim() || 'Vijay Yadav Revenue';
@@ -537,6 +450,7 @@
             if (phone.length === 10) phone = "91" + phone;
 
             var shared = false;
+            // బ్రౌజర్‌లో షేర్ సపోర్ట్ ఉంటే ఫైల్ & టెక్స్ట్ రెండూ పంపబడతాయి
             if (fileInput.files.length > 0 && navigator.canShare) {
                 var file = fileInput.files[0];
                 if (navigator.canShare({ files: [file] })) {
@@ -551,6 +465,7 @@
                 }
             }
 
+            // షేర్ ఫీచర్ లేకపోతే డైరెక్ట్ వాట్సాప్ చాట్ ఓపెన్ అవుతుంది
             if (!shared) {
                 window.open("https://api.whatsapp.com/send?phone=" + phone + "&text=" + encodeURIComponent(msg), '_blank');
             }
@@ -572,6 +487,7 @@
             renderHistory();
         }
 
+        // హిస్టరీ రెండర్
         function renderHistory() {
             var container = document.getElementById('history-items-container');
             var countLabel = document.getElementById('record-count');
@@ -585,4 +501,50 @@
             countLabel.innerText = dispatchHistory.length + ' రికార్డులు';
             var html = '';
             for (var i = 0; i < dispatchHistory.length; i++) {
-         
+                var item = dispatchHistory[i];
+                var isRec = item.status === 'Received';
+                html += '<div class="history-item">' +
+                    '<div class="history-header">' +
+                        '<span>👤 ' + item.receiver + '</span>' +
+                        '<span class="status-badge ' + (isRec ? 'status-received' : 'status-sent') + '">' +
+                            (isRec ? '✅ స్వీకరించబడింది' : '📤 పంపబడింది') +
+                        '</span>' +
+                    '</div>' +
+                    '<div style="color:var(--text-muted); font-size:0.75rem;">' +
+                        '📞 +' + item.phone + ' | 📄 ' + item.refNo + ' | 🕒 ' + item.date +
+                    '</div>' +
+                    '<div class="history-actions">' +
+                        '<button type="button" class="action-sub-btn btn-rerun" onclick="rerunDispatch(' + item.id + ')">🔄 Rerun (మళ్లీ పంపు)</button>' +
+                        '<button type="button" class="action-sub-btn btn-received" onclick="markReceived(' + item.id + ')">✔️ Received (వచ్చింది)</button>' +
+                    '</div>' +
+                '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        // Rerun ఫంక్షన్
+        function rerunDispatch(id) {
+            for (var i = 0; i < dispatchHistory.length; i++) {
+                if (dispatchHistory[i].id === id) {
+                    var item = dispatchHistory[i];
+                    document.getElementById('receiver-name').value = item.receiver;
+                    document.getElementById('receiver-phone').value = item.phone.replace(/^91/, '');
+                    document.getElementById('app-number').value = item.refNo;
+                    updatePreview();
+                    var msg = getMessageText();
+                    window.open("https://api.whatsapp.com/send?phone=" + item.phone + "&text=" + encodeURIComponent(msg), '_blank');
+                    break;
+                }
+            }
+        }
+
+        // Received స్టేటస్ మార్క్ చేయడం
+        function markReceived(id) {
+            for (var i = 0; i < dispatchHistory.length; i++) {
+                if (dispatchHistory[i].id === id) {
+                    dispatchHistory[i].status = 'Received';
+                    break;
+                }
+            }
+            try {
+                localStorage.set
