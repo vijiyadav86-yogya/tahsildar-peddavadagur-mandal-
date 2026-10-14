@@ -411,4 +411,71 @@
             <div class="text-[11px] text-slate-500 font-mono">+91 ${t.staffPhone}</div>
           </td>
           <td class="px-4 py-3">
-            <div class="font-
+            <div class="font-semibold text-slate-700">${t.dueDate}</div>
+            <div>${daysBadge}</div>
+          </td>
+          <td class="px-4 py-3">
+            <select onchange="updateStatus(${t.id}, this.value)" class="text-xs font-semibold px-2 py-1 rounded-lg border ${
+              t.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-700 border-amber-300'
+            }">
+              <option value="Pending" ${t.status === 'Pending' ? 'selected' : ''}>⏳ పెండింగ్ (Pending)</option>
+              <option value="Completed" ${t.status === 'Completed' ? 'selected' : ''}>✅ నివేదిక అందింది (Received)</option>
+            </select>
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="reSendNotice(${t.id})" title="మళ్లీ WhatsApp రిమైండర్ పంపండి" class="text-emerald-600 hover:text-emerald-800 p-1.5 rounded-lg bg-emerald-50">
+              <i class="fa-brands fa-whatsapp text-base"></i>
+            </button>
+            <button onclick="deleteTask(${t.id})" title="తొలగించు" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg bg-red-50 ml-1">
+              <i class="fa-regular fa-trash-can text-sm"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('pendingBadge').innerText = `${pendingCount} పెండింగ్`;
+    }
+
+    function updateStatus(id, newStatus) {
+      tasks = tasks.map(t => t.id === id ? { ...t, status: newStatus } : t);
+      localStorage.setItem('tahsildar_tasks', JSON.stringify(tasks));
+      renderTable();
+    }
+
+    function deleteTask(id) {
+      if (confirm('ఈ రికార్డును తొలగించాలనుకుంటున్నారా?')) {
+        tasks = tasks.filter(t => t.id !== id);
+        localStorage.setItem('tahsildar_tasks', JSON.stringify(tasks));
+        renderTable();
+      }
+    }
+
+    function reSendNotice(id) {
+      const t = tasks.find(x => x.id === id);
+      if (!t) return;
+      const msg = `*రిమైండర్: తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*
+━━━━━━━━━━━━━━━━━━━━
+📌 *అర్జీ పరిష్కార రిమైండర్*
+
+👤 *సిబ్బంది పేరు:* ${t.staffName}
+📂 *అర్జీ రకం:* ${t.category}
+👤 *అర్జిదారుని పేరు:* ${t.applicantName}
+📄 *రిఫరెన్స్ నంబర్:* ${t.refNumber}
+📅 *చివరి గడువు తేదీ:* ${t.dueDate}
+
+⚠️ నిర్ణీత గడువులోగా విచారణ పూర్తిచేసి రిపోర్టు సమర్పించవలసిందిగా మరోసారి తెలియజేయడమైనది.`;
+      const url = `https://api.whatsapp.com/send?phone=91${t.staffPhone}&text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    function loadSavedTasks() {
+      const saved = localStorage.getItem('tahsildar_tasks');
+      if (saved) {
+        tasks = JSON.parse(saved);
+        renderTable();
+      }
+    }
+  </script>
+</body>
+</html>
