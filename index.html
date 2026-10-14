@@ -27,7 +27,7 @@
       </div>
       <div class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-full text-xs font-semibold text-emerald-200 border border-white/10">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        ఆన్‌లైన్ డిస్పాచ్ సిస్టమ్
+        ఆన్‌లైన్ డిస్పాచ్ సిస్టమ్ (Firebase Live)
       </div>
     </div>
   </header>
@@ -156,7 +156,7 @@
       <div class="px-6 py-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50/70">
         <div class="flex items-center gap-2">
           <i data-lucide="clipboard-list" class="w-5 h-5 text-teal-600"></i>
-          <h3 class="text-base font-semibold text-slate-800">పంపించిన ఆదేశాలు & విచారణ నివేదికల ట్రాకింగ్ (Pending / Closed)</h3>
+          <h3 class="text-base font-semibold text-slate-800">పంపించిన ఆదేశాలు & విచారణ నివేదికల ట్రాకింగ్ (Live Database)</h3>
         </div>
         <div class="text-xs text-slate-500 font-medium" id="statsCount">మొత్తం: 0 రికార్డులు</div>
       </div>
@@ -175,7 +175,9 @@
             </tr>
           </thead>
           <tbody id="dispatchTableBody" class="divide-y divide-slate-100">
-            <!-- Dynamically populates via JavaScript -->
+            <tr>
+              <td colspan="7" class="px-6 py-8 text-center text-slate-400">డేటాబేస్ నుండి రికార్డులు లోడ్ అవుతున్నాయి...</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -183,35 +185,64 @@
 
   </main>
 
-  <script>
-    // Initialize Local Storage Records
-    let records = JSON.parse(localStorage.getItem('peddavadugur_records') || '[]');
+  <!-- Firebase Setup & App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      doc, 
+      updateDoc, 
+      deleteDoc, 
+      onSnapshot, 
+      query, 
+      orderBy, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // మీ Firebase Config వివరాలు
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPaIA-OPJnKH1X2XZKXG3DF4U-J6UY6OY",
+      authDomain: "mropvg-d2e6d.firebaseapp.com",
+      projectId: "mropvg-d2e6d",
+      storageBucket: "mropvg-d2e6d.firebasestorage.app",
+      messagingSenderId: "415955400979",
+      appId: "1:415955400979:web:3593e787f1309a024b42e6",
+      measurementId: "G-J22E1XRQSK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const recordsCol = collection(db, "peddavadugur_records");
+
+    let currentRecords = [];
 
     // Date Calculation Logic
-    function addDaysToDate(days) {
+    window.addDaysToDate = function(days) {
       const target = new Date();
       target.setDate(target.getDate() + parseInt(days));
       const yyyy = target.getFullYear();
       const mm = String(target.getMonth() + 1).padStart(2, '0');
       const dd = String(target.getDate()).padStart(2, '0');
       return `${yyyy}-${mm}-${dd}`;
-    }
+    };
 
-    function applyPresetDays(val) {
+    window.applyPresetDays = function(val) {
       document.getElementById('manualDays').value = '';
       document.getElementById('dueDate').value = addDaysToDate(val);
-    }
+    };
 
-    function calculateCustomDate(val) {
+    window.calculateCustomDate = function(val) {
       if (val && parseInt(val) > 0) {
         document.getElementById('dueDate').value = addDaysToDate(val);
       } else {
         applyPresetDays(document.getElementById('presetDays').value);
       }
-    }
+    };
 
     // Modern Contact Picker API
-    async function pickPhoneContact() {
+    window.pickPhoneContact = async function() {
       if ('contacts' in navigator && 'ContactsManager' in window) {
         try {
           const props = ['name', 'tel'];
@@ -233,15 +264,62 @@
       } else {
         alert('ఈ బ్రౌజర్‌లో కాంటాక్ట్ పికర్ అందుబాటులో లేదు. దయచేసి వివరాలను నేరుగా టైప్ చేయండి.');
       }
-    }
+    };
 
-    // Format Telugu Template Notice
-    function generateMessageText(item) {
+    window.generateMessageText = function(item) {
       return `*తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*\n━━━━━━━━━━━━━━━━━━━━\n📌 *ఆదేశాలు*\n\n👤 *సిబ్బంది పేరు:* ${item.staffName}\n📂 *అర్జీ రకం :* ${item.appType}\n👤 *అర్జిదారుని పేరు :* ${item.applicantName}\n📄 *రిఫరెన్స్ నంబర్:* ${item.refNo}\n📅 *పరిష్కార గడువు తేదీ:* ${item.dueDate}\n\n⚠️ *గమనిక:* నిర్ణీత గడువులోగా క్షేత్రస్థాయి విచారణ పూర్తి చేసి తగిన నివేదికను కార్యాలయంలో సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
-    }
+    };
 
-    // Web Share API to include file + text
-    async function shareViaNative() {
+    window.getFormData = function() {
+      const appType = document.getElementById('appType').value;
+      const applicantName = document.getElementById('applicantName').value.trim();
+      const refNo = document.getElementById('refNo').value.trim();
+      const staffName = document.getElementById('staffName').value.trim();
+      const staffPhone = document.getElementById('staffPhone').value.trim();
+      const dueDate = document.getElementById('dueDate').value;
+
+      if (!applicantName || !refNo || !staffName || !staffPhone || !dueDate) {
+        alert('దయచేసి అన్ని వివరాలను నమోదు చేయండి.');
+        return null;
+      }
+
+      return {
+        appType,
+        applicantName,
+        refNo,
+        staffName,
+        staffPhone,
+        dueDate,
+        status: 'పెండింగ్'
+      };
+    };
+
+    // Firebase లోకి రికార్డును సేవ్ చేయడం
+    window.saveRecord = async function(item) {
+      try {
+        await addDoc(recordsCol, {
+          ...item,
+          createdAt: serverTimestamp()
+        });
+        document.getElementById('dispatchForm').reset();
+        applyPresetDays(3);
+      } catch (err) {
+        console.error('Firebase save error:', err);
+        alert('డేటా సేవ్ చేయడంలో లోపం ఏర్పడింది: ' + err.message);
+      }
+    };
+
+    window.sendNotice = function() {
+      const item = getFormData();
+      if (!item) return;
+
+      saveRecord(item);
+      const text = encodeURIComponent(generateMessageText(item));
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=91${item.staffPhone}&text=${text}`;
+      window.open(whatsappUrl, '_blank');
+    };
+
+    window.shareViaNative = async function() {
       const fileInput = document.getElementById('fileUpload');
       const item = getFormData();
       if (!item) return;
@@ -265,71 +343,46 @@
       } else {
         alert('మీ డివైస్‌లో డైరెక్ట్ ఫైల్ షేరింగ్ సపోర్ట్ లేదు. వాట్సాప్ బటన్ ఉపయోగించండి.');
       }
-    }
+    };
 
-    function getFormData() {
-      const appType = document.getElementById('appType').value;
-      const applicantName = document.getElementById('applicantName').value.trim();
-      const refNo = document.getElementById('refNo').value.trim();
-      const staffName = document.getElementById('staffName').value.trim();
-      const staffPhone = document.getElementById('staffPhone').value.trim();
-      const dueDate = document.getElementById('dueDate').value;
-
-      if (!applicantName || !refNo || !staffName || !staffPhone || !dueDate) {
-        alert('దయచేసి అన్ని వివరాలను నమోదు చేయండి.');
-        return null;
+    // Firebase లో స్టేటస్ అప్‌డేట్ చేయడం
+    window.toggleStatus = async function(id, currentStatus) {
+      const newStatus = currentStatus === 'పెండింగ్' ? 'నివేదిక అందింది' : 'పెండింగ్';
+      try {
+        const docRef = doc(db, "peddavadugur_records", id);
+        await updateDoc(docRef, { status: newStatus });
+      } catch (err) {
+        alert('స్టేటస్ అప్‌డేట్ చేయడంలో లోపం: ' + err.message);
       }
+    };
 
-      return {
-        id: Date.now(),
-        appType,
-        applicantName,
-        refNo,
-        staffName,
-        staffPhone,
-        dueDate,
-        status: 'పెండింగ్'
-      };
-    }
-
-    function sendNotice() {
-      const item = getFormData();
-      if (!item) return;
-
-      saveRecord(item);
-      const text = encodeURIComponent(generateMessageText(item));
-      const whatsappUrl = `https://api.whatsapp.com/send?phone=91${item.staffPhone}&text=${text}`;
-      window.open(whatsappUrl, '_blank');
-    }
-
-    function saveRecord(item) {
-      records.unshift(item);
-      localStorage.setItem('peddavadugur_records', JSON.stringify(records));
-      renderTable();
-      document.getElementById('dispatchForm').reset();
-      applyPresetDays(3);
-    }
-
-    function toggleStatus(id) {
-      records = records.map(r => {
-        if (r.id === id) {
-          r.status = r.status === 'పెండింగ్' ? 'నివేదిక అందింది' : 'పెండింగ్';
+    // Firebase నుండి రికార్డును తొలగించడం
+    window.deleteRecord = async function(id) {
+      if (confirm('ఈ రికార్డును క్లౌడ్ డేటాబేస్ నుండి శాశ్వతంగా తొలగించాలనుకుంటున్నారా?')) {
+        try {
+          await deleteDoc(doc(db, "peddavadugur_records", id));
+        } catch (err) {
+          alert('రికార్డ్ డిలీట్ చేయడంలో లోపం: ' + err.message);
         }
-        return r;
-      });
-      localStorage.setItem('peddavadugur_records', JSON.stringify(records));
-      renderTable();
-    }
-
-    function deleteRecord(id) {
-      if (confirm('ఈ రికార్డును తొలగించాలనుకుంటున్నారా?')) {
-        records = records.filter(r => r.id !== id);
-        localStorage.setItem('peddavadugur_records', JSON.stringify(records));
-        renderTable();
       }
-    }
+    };
 
-    function renderTable() {
+    // Real-time Database Listener: ఏ డివైస్ నుంచి మారినా అందరికీ వెంటనే అప్‌డేట్ అవుతుంది
+    const recordsQuery = query(recordsCol, orderBy("createdAt", "desc"));
+    onSnapshot(recordsQuery, (snapshot) => {
+      currentRecords = [];
+      snapshot.forEach((docSnap) => {
+        currentRecords.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      renderTable(currentRecords);
+    }, (error) => {
+      console.error("Firestore Error:", error);
+      document.getElementById('dispatchTableBody').innerHTML = `
+        <tr><td colspan="7" class="px-6 py-8 text-center text-rose-500 font-semibold">డేటాబేస్ రూల్స్ లోపం: Firestore Rules లో Read/Write పర్మిషన్స్ చెక్ చేయండి.</td></tr>
+      `;
+    });
+
+    function renderTable(records) {
       const tbody = document.getElementById('dispatchTableBody');
       const stats = document.getElementById('statsCount');
       tbody.innerHTML = '';
@@ -371,12 +424,12 @@
           <td class="px-6 py-4 font-mono font-medium text-slate-700">${r.dueDate}</td>
           <td class="px-6 py-4">${pendingBadge}</td>
           <td class="px-6 py-4">
-            <button onclick="toggleStatus(${r.id})" class="text-xs font-semibold px-3 py-1.5 rounded-lg border transition ${isClosed ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'}">
+            <button onclick="toggleStatus('${r.id}', '${r.status}')" class="text-xs font-semibold px-3 py-1.5 rounded-lg border transition ${isClosed ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'}">
               ${r.status}
             </button>
           </td>
           <td class="px-6 py-4 text-right">
-            <button onclick="deleteRecord(${r.id})" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition" title="తొలగించు">
+            <button onclick="deleteRecord('${r.id}')" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition" title="తొలగించు">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
           </td>
@@ -384,14 +437,17 @@
         tbody.appendChild(row);
       });
 
-      lucide.createIcons();
+      if (window.lucide) {
+        lucide.createIcons();
+      }
     }
 
-    // Initialize Default States
+    // Default initialization
     window.addEventListener('DOMContentLoaded', () => {
       applyPresetDays(3);
-      renderTable();
-      lucide.createIcons();
+      if (window.lucide) {
+        lucide.createIcons();
+      }
     });
   </script>
 </body>
