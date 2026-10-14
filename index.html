@@ -4,21 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>తహసీల్దార్ కార్యాలయం - పెద్దవడుగూరు మండలం</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --primary: #1e3a8a;
             --primary-light: #2563eb;
-            --accent: #f59e0b;
             --success: #16a34a;
             --danger: #dc2626;
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --card-bg: #ffffff;
-            --border: #e2e8f0;
-            --text-dark: #0f172a;
+            --bg: #0f172a;
+            --card: #ffffff;
+            --border: #cbd5e1;
+            --text: #0f172a;
             --text-muted: #64748b;
         }
 
@@ -26,30 +21,28 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', 'Noto Sans Telugu', sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        html, body {
-            width: 100%;
+        body {
+            background-color: var(--bg);
             min-height: 100vh;
-            overflow-x: hidden;
-            background: var(--bg-gradient);
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 10px;
-            color: var(--text-dark);
+            color: var(--text);
         }
 
-        /* లాగిన్ గేట్ వే */
+        /* 1. లాగిన్ బాక్స్ */
         #auth-modal {
-            background: var(--card-bg);
-            padding: 26px 20px;
-            border-radius: 18px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            background: var(--card);
+            padding: 28px 20px;
+            border-radius: 16px;
             width: 100%;
             max-width: 380px;
             text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
         .auth-title {
@@ -60,7 +53,7 @@
         }
 
         .auth-subtitle {
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
             margin-bottom: 20px;
         }
@@ -68,13 +61,13 @@
         .auth-input {
             width: 100%;
             padding: 12px;
-            font-size: 1.2rem;
-            letter-spacing: 5px;
+            font-size: 1.3rem;
+            letter-spacing: 6px;
             text-align: center;
             border: 2px solid var(--border);
             border-radius: 10px;
             outline: none;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .auth-input:focus {
@@ -83,37 +76,33 @@
 
         .auth-btn {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             background: var(--primary);
             color: #ffffff;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-        }
-
-        .auth-btn:active {
-            transform: scale(0.98);
         }
 
         .error-msg {
             color: var(--danger);
             font-weight: 600;
             font-size: 0.85rem;
-            margin-top: 12px;
+            margin-top: 14px;
             display: none;
         }
 
-        /* మెయిన్ కంటైనర్ */
+        /* 2. మెయిన్ అప్లికేషన్ */
         #main-app {
-            display: none;
+            display: none; /* లాగిన్ అయ్యాకే కనపడుతుంది */
             width: 100%;
-            max-width: 650px;
-            background: var(--card-bg);
-            border-radius: 18px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            max-width: 600px;
+            background: var(--card);
+            border-radius: 16px;
             overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
 
         .app-header {
@@ -124,9 +113,9 @@
         }
 
         .app-header h1 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
         .app-header p {
@@ -138,51 +127,33 @@
             padding: 14px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            width: 100%;
-        }
-
-        .form-section {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
+            gap: 12px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 4px;
-            width: 100%;
         }
 
         .form-group label {
-            font-size: 0.82rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: 700;
             color: #334155;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .form-group label i {
-            color: var(--primary-light);
         }
 
         .form-control {
             width: 100%;
-            padding: 10px 12px;
+            padding: 9px 12px;
             border: 1.5px solid var(--border);
             border-radius: 8px;
             font-size: 0.88rem;
             outline: none;
-            background-color: #ffffff;
         }
 
         .contact-picker-wrapper {
             display: flex;
             gap: 6px;
-            width: 100%;
         }
 
         .country-tag {
@@ -195,7 +166,6 @@
             font-weight: 700;
             font-size: 0.85rem;
             border: 1.5px solid var(--border);
-            color: #334155;
         }
 
         .contact-pick-btn {
@@ -205,10 +175,7 @@
             padding: 0 12px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.82rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            font-size: 0.8rem;
             color: var(--primary);
             white-space: nowrap;
         }
@@ -217,16 +184,13 @@
             display: grid;
             grid-template-columns: 1.2fr 1fr;
             gap: 8px;
-            width: 100%;
         }
 
-        /* ప్రివ్యూ కార్డ్ */
         .preview-card {
             background: #f8fafc;
-            border: 1.5px dashed #cbd5e1;
+            border: 1.5px dashed #94a3b8;
             border-radius: 12px;
             padding: 12px;
-            width: 100%;
         }
 
         .preview-title {
@@ -235,9 +199,6 @@
             color: var(--text-muted);
             margin-bottom: 6px;
             text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .notice-box {
@@ -249,9 +210,7 @@
             line-height: 1.6;
             white-space: pre-wrap;
             word-break: break-word;
-            overflow-wrap: anywhere;
             color: #1e293b;
-            width: 100%;
         }
 
         .send-btn {
@@ -265,24 +224,15 @@
             font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.25);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
         }
 
-        .send-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* ఇటీవల పంపిన జాబితా */
+        /* హిస్టరీ కార్డ్ */
         .history-card {
             background: #ffffff;
             border: 1.5px solid var(--border);
             border-radius: 12px;
             padding: 12px;
-            width: 100%;
         }
 
         .history-title {
@@ -299,19 +249,19 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 250px;
+            max-height: 240px;
             overflow-y: auto;
         }
 
         .history-item {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
             background: #f8fafc;
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 10px;
             font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .history-header {
@@ -326,9 +276,6 @@
             border-radius: 12px;
             font-size: 0.72rem;
             font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .status-sent {
@@ -355,10 +302,6 @@
             font-weight: 600;
             cursor: pointer;
             border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
         }
 
         .btn-rerun {
@@ -378,11 +321,11 @@
 
     <!-- 1. పిన్ లాగిన్ స్క్రీన్ -->
     <div id="auth-modal">
-        <div class="auth-title"><i class="fa-solid fa-landmark"></i> Welcome Tahsildar Office</div>
+        <div class="auth-title">🏛️ Welcome Tahsildar Office</div>
         <div class="auth-subtitle">Peddavadugur Mandal Revenue Portal</div>
         
-        <input type="password" id="access-code" class="auth-input" placeholder="••••" maxlength="8" inputmode="numeric" autocomplete="off">
-        <button type="button" class="auth-btn" onclick="verifyPassword()"><i class="fa-solid fa-lock-open"></i> అధికారిక లాగిన్</button>
+        <input type="password" id="access-code" class="auth-input" placeholder="••••" maxlength="8" inputmode="numeric">
+        <button type="button" class="auth-btn" id="login-submit-btn">అధికారిక లాగిన్</button>
         
         <div id="auth-error" class="error-msg">Password wrong! contact Admin</div>
     </div>
@@ -390,168 +333,148 @@
     <!-- 2. ప్రధాన పోర్టల్ -->
     <div id="main-app">
         <div class="app-header">
-            <h1><i class="fa-solid fa-scale-balanced"></i> తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు</h1>
+            <h1>⚖️ తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు</h1>
             <p>అర్జీల పరిశీలన ఆదేశాలు & రిపోర్ట్ డిస్పాచ్ సిస్టమ్</p>
         </div>
 
         <div class="app-body">
-            <div class="form-section">
-                <!-- విభాగం -->
-                <div class="form-group">
-                    <label><i class="fa-solid fa-layer-group"></i> విభాగం (Category)</label>
-                    <select id="record-category" class="form-control" onchange="updatePreview()">
-                        <option value="ROR / మ్యుటేషన్ రికార్డు">ROR (రికార్డ్ ఆఫ్ రైట్స్ / మ్యుటేషన్)</option>
-                        <option value="PGRS అర్జీ పరిష్కారం">PGRS (ప్రజా ఫిర్యాదుల పరిష్కారం)</option>
-                        <option value="మండల అప్లికేషన్ విచారణ">మండలా అప్లికేషన్</option>
-                        <option value="ఇతరములు / జనరల్ నోటీస్">ఇతరములు</option>
-                    </select>
-                </div>
+            <!-- ఇన్‌పుట్స్ -->
+            <div class="form-group">
+                <label>📁 విభాగం (Category)</label>
+                <select id="record-category" class="form-control" onchange="updatePreview()">
+                    <option value="ROR / మ్యుటేషన్ రికార్డు">ROR (రికార్డ్ ఆఫ్ రైట్స్ / మ్యుటేషన్)</option>
+                    <option value="PGRS అర్జీ పరిష్కారం">PGRS (ప్రజా ఫిర్యాదుల పరిష్కారం)</option>
+                    <option value="మండల అప్లికేషన్ విచారణ">మండలా అప్లికేషన్</option>
+                    <option value="ఇతరములు / జనరల్ నోటీస్">ఇతరములు</option>
+                </select>
+            </div>
 
-                <!-- అధికారి / గ్రహీత పేరు -->
-                <div class="form-group">
-                    <label><i class="fa-solid fa-user-tie"></i> గ్రహీత పేరు (VRO / సిబ్బంది / అర్జీదారు)</label>
-                    <input type="text" id="receiver-name" class="form-control" placeholder="పేరు నమోదు చేయండి" value="Vijay Yadav Revenue" oninput="updatePreview()">
-                </div>
+            <div class="form-group">
+                <label>👤 గ్రహీత పేరు (VRO / సిబ్బంది / అర్జీదారు)</label>
+                <input type="text" id="receiver-name" class="form-control" placeholder="పేరు నమోదు చేయండి" value="Vijay Yadav Revenue" oninput="updatePreview()">
+            </div>
 
-                <!-- మొబైల్ నంబర్ -->
-                <div class="form-group">
-                    <label><i class="fa-solid fa-phone"></i> మొబైల్ నంబర్ (WhatsApp Number)</label>
-                    <div class="contact-picker-wrapper">
-                        <span class="country-tag">+91</span>
-                        <input type="tel" id="receiver-phone" class="form-control" placeholder="10 అంకెల నంబర్" maxlength="10" inputmode="numeric">
-                        <button type="button" class="contact-pick-btn" onclick="pickContact()">
-                            <i class="fa-solid fa-address-book"></i> ఫోన్ బుక్
-                        </button>
-                    </div>
-                </div>
-
-                <!-- రిఫరెన్స్ నంబర్ -->
-                <div class="form-group">
-                    <label><i class="fa-solid fa-hashtag"></i> అప్లికేషన్ / అర్జీ నంబర్</label>
-                    <input type="text" id="app-number" class="form-control" placeholder="ఉదా: F-8/2026/నోటీస్-12" value="F-8/2026/నోటీస్-12" oninput="updatePreview()">
-                </div>
-
-                <!-- ఫైల్ అటాచ్‌మెంట్ -->
-                <div class="form-group">
-                    <label><i class="fa-solid fa-paperclip"></i> సంబంధిత ఫైల్ (PDF లేదా JPG)</label>
-                    <input type="file" id="upload-file" class="form-control" accept=".pdf, image/*">
-                </div>
-
-                <!-- గడువు రోజులు -->
-                <div class="form-group">
-                    <label><i class="fa-solid fa-hourglass-half"></i> గడువు రోజులు & పరిష్కార తేదీ</label>
-                    <div class="days-container">
-                        <select id="preset-days" class="form-control" onchange="syncDays('preset')">
-                            <option value="1">1 రోజు</option>
-                            <option value="2">2 రోజులు</option>
-                            <option value="3" selected>3 రోజులు</option>
-                            <option value="5">5 రోజులు</option>
-                            <option value="7">7 రోజులు</option>
-                            <option value="10">10 రోజులు</option>
-                        </select>
-                        <input type="number" id="custom-days" class="form-control" placeholder="ఇతర రోజులు" min="1" max="90" oninput="syncDays('custom')" inputmode="numeric">
-                    </div>
-                </div>
-
-                <!-- క్యాలెండర్ డేట్ -->
-                <div class="form-group">
-                    <label><i class="fa-solid fa-calendar-day"></i> క్యాలెండర్ గడువు తేదీ</label>
-                    <input type="date" id="due-date" class="form-control" onchange="updatePreview()">
+            <div class="form-group">
+                <label>📞 మొబైల్ నంబర్ (WhatsApp Number)</label>
+                <div class="contact-picker-wrapper">
+                    <span class="country-tag">+91</span>
+                    <input type="tel" id="receiver-phone" class="form-control" placeholder="10 అంకెల నంబర్" maxlength="10" inputmode="numeric">
+                    <button type="button" class="contact-pick-btn" onclick="pickContact()">📇 కాంటాక్ట్</button>
                 </div>
             </div>
 
-            <!-- లైవ్ నోటీస్ ప్రివ్యూ & బటన్ -->
+            <div class="form-group">
+                <label>📄 అప్లికేషన్ / అర్జీ నంబర్</label>
+                <input type="text" id="app-number" class="form-control" placeholder="ఉదా: F-8/2026/నోటీస్-12" value="F-8/2026/నోటీస్-12" oninput="updatePreview()">
+            </div>
+
+            <div class="form-group">
+                <label>📎 సంబంధిత ఫైల్ అటాచ్‌మెంట్ (PDF లేదా JPG)</label>
+                <input type="file" id="upload-file" class="form-control" accept=".pdf, image/*">
+            </div>
+
+            <div class="form-group">
+                <label>⏳ గడువు రోజులు & పరిష్కార తేదీ</label>
+                <div class="days-container">
+                    <select id="preset-days" class="form-control" onchange="syncDays('preset')">
+                        <option value="1">1 రోజు</option>
+                        <option value="2">2 రోజులు</option>
+                        <option value="3" selected>3 రోజులు</option>
+                        <option value="5">5 రోజులు</option>
+                        <option value="7">7 రోజులు</option>
+                        <option value="10">10 రోజులు</option>
+                    </select>
+                    <input type="number" id="custom-days" class="form-control" placeholder="ఇతర రోజులు" min="1" max="90" oninput="syncDays('custom')" inputmode="numeric">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>📅 క్యాలెండర్ గడువు తేదీ</label>
+                <input type="date" id="due-date" class="form-control" onchange="updatePreview()">
+            </div>
+
+            <!-- లైవ్ ప్రివ్యూ & బటన్ -->
             <div class="preview-card">
-                <div class="preview-title"><i class="fa-solid fa-eye"></i> లైవ్ ఆదేశాల ప్రివ్యూ</div>
+                <div class="preview-title">👁️ లైవ్ ఆదేశాల ప్రివ్యూ</div>
                 <div class="notice-box" id="notice-preview-text"></div>
 
-                <button type="button" class="send-btn" onclick="dispatchOrderWithFile()">
-                    <i class="fa-brands fa-whatsapp"></i> ఫైల్ & టెక్స్ట్ పంపండి (Dispatch)
+                <button type="button" class="send-btn" onclick="dispatchOrder()">
+                    📲 ఫైల్ & టెక్స్ట్ పంపండి (Dispatch)
                 </button>
             </div>
 
-            <!-- ఎవరికి పంపామో వివరాలు, Rerun, Received ట్రాకింగ్ -->
+            <!-- డిస్పాచ్ హిస్టరీ & ట్రాకింగ్ -->
             <div class="history-card">
                 <div class="history-title">
-                    <span><i class="fa-solid fa-clock-rotate-left"></i> ఇటీవల పంపిన ఆదేశాల జాబితా</span>
+                    <span>🕒 ఇటీవల పంపిన ఆదేశాల జాబితా</span>
                     <span id="record-count" style="font-size:0.75rem; color:var(--text-muted);">0 రికార్డులు</span>
                 </div>
-                <div class="history-list" id="history-items-container">
-                    <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 10px;">
-                        ఇంకా ఎలాంటి ఆదేశాలు పంపలేదు.
-                    </div>
-                </div>
+                <div class="history-list" id="history-items-container"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // లోకల్ స్టోరేజ్ నుండి హిస్టరీ డేటా
-        let dispatchHistory = [];
+        // డేటాబేస్ (localStorage)
+        var dispatchHistory = [];
         try {
-            dispatchHistory = JSON.parse(localStorage.getItem('peddavadugur_dispatches')) || [];
+            var saved = localStorage.getItem('peddavadugur_dispatches');
+            if (saved) dispatchHistory = JSON.parse(saved);
         } catch(e) {
             dispatchHistory = [];
         }
 
-        // 1. పిన్ వెరిఫికేషన్ (1207)
-        function verifyPassword() {
-            try {
-                const passInput = document.getElementById('access-code');
-                const errorElem = document.getElementById('auth-error');
-                const entered = passInput.value.trim();
+        // లాగిన్ ఫంక్షన్ (పిన్: 1207)
+        function doLogin() {
+            var passInput = document.getElementById('access-code');
+            var errorElem = document.getElementById('auth-error');
+            var entered = passInput.value.trim();
 
-                if (entered === "1207") {
-                    errorElem.style.display = 'none';
-                    document.getElementById('auth-modal').style.display = 'none';
-                    document.getElementById('main-app').style.display = 'block';
+            if (entered === "1207") {
+                errorElem.style.display = 'none';
+                document.getElementById('auth-modal').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
 
-                    try { initDate(3); } catch(err) { console.log(err); }
-                    try { renderHistory(); } catch(err) { console.log(err); }
-                } else {
-                    errorElem.style.display = 'block';
-                    passInput.value = '';
-                    passInput.focus();
-                }
-            } catch(e) {
-                alert("Login Error: " + e.message);
+                initDate(3);
+                renderHistory();
+            } else {
+                errorElem.style.display = 'block';
+                passInput.value = '';
+                passInput.focus();
             }
         }
 
-        // ఎంటర్‌కీ లాగిన్ సపోర్ట్
-        document.addEventListener("DOMContentLoaded", function() {
-            const passInput = document.getElementById('access-code');
-            if (passInput) {
-                passInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.keyCode === 13) {
-                        e.preventDefault();
-                        verifyPassword();
-                    }
-                });
-            }
-        });
+        // లాగిన్ ఈవెంట్ లిజనర్స్
+        document.getElementById('login-submit-btn').onclick = doLogin;
 
-        // 2. గడువు తేదీ లెక్కింపు
+        document.getElementById('access-code').onkeydown = function(e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                e.preventDefault();
+                doLogin();
+            }
+        };
+
+        // గడువు తేదీ లెక్కింపు
         function initDate(daysToAdd) {
-            const now = new Date();
+            var now = new Date();
             now.setDate(now.getDate() + parseInt(daysToAdd));
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            const dd = String(now.getDate()).padStart(2, '0');
-            document.getElementById('due-date').value = `${yyyy}-${mm}-${dd}`;
+            var yyyy = now.getFullYear();
+            var mm = String(now.getMonth() + 1).padStart(2, '0');
+            var dd = String(now.getDate()).padStart(2, '0');
+            document.getElementById('due-date').value = yyyy + '-' + mm + '-' + dd;
             updatePreview();
         }
 
         function syncDays(source) {
-            let days = 3;
+            var days = 3;
             if (source === 'preset') {
-                const val = document.getElementById('preset-days').value;
+                var val = document.getElementById('preset-days').value;
                 if (val) {
                     days = parseInt(val);
                     document.getElementById('custom-days').value = '';
                 }
             } else if (source === 'custom') {
-                const val = document.getElementById('custom-days').value;
+                var val = document.getElementById('custom-days').value;
                 if (val && parseInt(val) > 0) {
                     days = parseInt(val);
                     document.getElementById('preset-days').value = '';
@@ -560,32 +483,106 @@
             initDate(days);
         }
 
-        // 3. ఫోన్ కాంటాక్ట్ పికర్
+        // ఫోన్ కాంటాక్ట్ పికర్
         async function pickContact() {
             if ('contacts' in navigator && 'ContactsManager' in window) {
                 try {
-                    const props = ['name', 'tel'];
-                    const contacts = await navigator.contacts.select(props, { multiple: false });
-                    if (contacts.length > 0) {
-                        const contact = contacts[0];
-                        if (contact.name && contact.name[0]) {
-                            document.getElementById('receiver-name').value = contact.name[0];
+                    var contacts = await navigator.contacts.select(['name', 'tel'], { multiple: false });
+                    if (contacts && contacts.length > 0) {
+                        if (contacts[0].name && contacts[0].name[0]) {
+                            document.getElementById('receiver-name').value = contacts[0].name[0];
                         }
-                        if (contact.tel && contact.tel[0]) {
-                            let cleanPhone = contact.tel[0].replace(/\D/g, '');
-                            if (cleanPhone.length > 10) cleanPhone = cleanPhone.slice(-10);
-                            document.getElementById('receiver-phone').value = cleanPhone;
+                        if (contacts[0].tel && contacts[0].tel[0]) {
+                            var clean = contacts[0].tel[0].replace(/\D/g, '');
+                            if (clean.length > 10) clean = clean.slice(-10);
+                            document.getElementById('receiver-phone').value = clean;
                         }
                         updatePreview();
                     }
-                } catch (ex) {
-                    console.log('Contact pick cancelled');
-                }
+                } catch(e) {}
             } else {
-                alert("మీ బ్రౌజర్‌లో కాంటాక్ట్ పికర్ అందుబాటులో లేదు. నేరుగా 10 అంకెల మొబైల్ నంబర్ టైప్ చేయండి.");
+                alert("మీ ఫోన్ బ్రౌజర్‌లో కాంటాక్ట్ పికర్ సపోర్ట్ లేదు. నేరుగా 10 అంకెల మొబైల్ నంబర్ టైప్ చేయండి.");
             }
         }
 
-        // 4. నోటీస్ టెక్స్ట్ తయారీ
-        function generateMessage() {
-            const category = document.getElementById('record-categ
+        // మెసేజ్ ప్రివ్యూ
+        function getMessageText() {
+            var category = document.getElementById('record-category').value;
+            var receiver = document.getElementById('receiver-name').value.trim() || 'Vijay Yadav Revenue';
+            var refNo = document.getElementById('app-number').value.trim() || 'F-8/2026/నోటీస్-12';
+            var dueDate = document.getElementById('due-date').value;
+
+            return "*తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*\n───────────────\n📌 *ఆదేశాలు*\n\n👤 *గ్రహీత:* " + receiver + "\n📂 *విభాగం:* " + category + "\n📄 *రిఫరెన్స్ నంబర్:* " + refNo + "\n📅 *పరిష్కార గడువు తేదీ:* " + dueDate + "\n\n⚠️ *గమనిక:* సదరు అర్జీని వెంటనే క్షేత్రస్థాయిలో పరిశీలించి, నిర్ణీత గడువులోగా తగిన నివేదికను (Report) తహసీల్దార్ కార్యాలయంలో సమర్పించవలసిందిగా ఆదేశించడమైనది.";
+        }
+
+        function updatePreview() {
+            document.getElementById('notice-preview-text').innerText = getMessageText();
+        }
+
+        // డిస్పాచ్ (WhatsApp)
+        async function dispatchOrder() {
+            var phone = document.getElementById('receiver-phone').value.trim().replace(/\D/g, '');
+            var receiver = document.getElementById('receiver-name').value.trim() || 'Vijay Yadav Revenue';
+            var refNo = document.getElementById('app-number').value.trim() || 'Notice';
+            var category = document.getElementById('record-category').value;
+            var fileInput = document.getElementById('upload-file');
+            var msg = getMessageText();
+
+            if (!phone || phone.length < 10) {
+                alert("దయచేసి సరైన 10 అంకెల మొబైల్ నంబర్‌ను నమోదు చేయండి.");
+                document.getElementById('receiver-phone').focus();
+                return;
+            }
+
+            if (phone.length === 10) phone = "91" + phone;
+
+            var shared = false;
+            if (fileInput.files.length > 0 && navigator.canShare) {
+                var file = fileInput.files[0];
+                if (navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'తహసీల్దార్ కార్యాలయ ఆదేశాలు',
+                            text: msg
+                        });
+                        shared = true;
+                    } catch(err) {}
+                }
+            }
+
+            if (!shared) {
+                window.open("https://api.whatsapp.com/send?phone=" + phone + "&text=" + encodeURIComponent(msg), '_blank');
+            }
+
+            // సేవ్ హిస్టరీ
+            dispatchHistory.unshift({
+                id: Date.now(),
+                receiver: receiver,
+                phone: phone,
+                refNo: refNo,
+                category: category,
+                date: new Date().toLocaleDateString('en-GB'),
+                status: 'Sent'
+            });
+
+            try {
+                localStorage.setItem('peddavadugur_dispatches', JSON.stringify(dispatchHistory));
+            } catch(e) {}
+            renderHistory();
+        }
+
+        function renderHistory() {
+            var container = document.getElementById('history-items-container');
+            var countLabel = document.getElementById('record-count');
+
+            if (dispatchHistory.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 10px;">ఇంకా ఎలాంటి ఆదేశాలు పంపలేదు.</div>';
+                countLabel.innerText = '0 రికార్డులు';
+                return;
+            }
+
+            countLabel.innerText = dispatchHistory.length + ' రికార్డులు';
+            var html = '';
+            for (var i = 0; i < dispatchHistory.length; i++) {
+         
