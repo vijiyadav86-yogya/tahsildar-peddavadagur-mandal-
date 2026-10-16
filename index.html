@@ -4,307 +4,308 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tahsildar Office Peddavadugur - Reminder Tool</title>
+<title>Tahsildar Office Peddavadugur Reminder Tool</title>
 <style>
-:root{font-family:Arial,"Noto Sans Telugu",sans-serif;color:#183047}
-body{margin:0;background:#f1f7fc}
-header{background:#164e78;color:white;padding:20px;text-align:center}
-main{max-width:1050px;margin:auto;padding:16px}
-.card{background:white;padding:18px;margin:14px 0;border-radius:14px;box-shadow:0 3px 14px #173c5512}
-h2{font-size:20px;margin-top:0}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-label{display:block;font-size:14px;font-weight:bold;margin-bottom:5px}
-input,textarea,button{box-sizing:border-box;width:100%;padding:11px;border-radius:8px;border:1px solid #bdcbd8;font:inherit}
-textarea{min-height:65px}
-button{background:#1769aa;color:white;border:0;cursor:pointer;font-weight:bold;margin-top:8px}
-button.secondary{background:#536a7b}
-button.danger{background:#a83232}
-button:disabled{opacity:.5}
+*{box-sizing:border-box}
+body{margin:0;background:#eef5fb;color:#183047;font-family:Arial,"Noto Sans Telugu",sans-serif}
+header{background:#164e78;color:#fff;text-align:center;padding:20px 12px}
+main{max-width:1000px;margin:auto;padding:14px}
+.card{background:#fff;padding:17px;margin:14px 0;border-radius:13px;box-shadow:0 3px 12px #18304712}
+h1{font-size:23px;margin:0 0 8px}
+h2{font-size:19px;margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+label{display:block;font-weight:bold;font-size:14px;margin:0 0 5px}
+input,textarea,button{width:100%;padding:11px;border:1px solid #bdcbd8;border-radius:8px;font:inherit}
+textarea{min-height:70px}
+button{background:#1769aa;color:white;border:0;margin-top:8px;cursor:pointer;font-weight:bold}
+.secondary{background:#536a7b}
+.danger{background:#a83232}
 .small{font-size:13px;color:#536779}
-#status{padding:10px;background:#e5f3ff;border-radius:8px;white-space:pre-wrap}
-.record{border:1px solid #d7e2eb;padding:13px;border-radius:10px;margin:10px 0;overflow-wrap:anywhere}
+.hidden{display:none!important}
+.record{background:#fff;border:1px solid #d7e2eb;border-radius:10px;padding:13px;margin:12px 0;overflow-wrap:anywhere}
 .record h3{margin:0 0 8px}
-.pill{display:inline-block;background:#e3f4e8;color:#176239;padding:4px 8px;border-radius:20px;font-size:12px}
-.hidden{display:none}
-a{color:#1265a0}
+.record p{white-space:pre-line}
+#message{background:#e6f3ff;padding:10px;border-radius:8px;white-space:pre-wrap}
+.status{display:inline-block;padding:4px 8px;border-radius:20px;background:#e3f4e8;color:#176239;font-size:12px}
 </style>
 </head>
 <body>
 <header>
-  <h1>Tahsildar Office Peddavadugur</h1>
-  <div>Work Records & Deadline Reminder Tool</div>
+<h1>తహసీల్దార్ కార్యాలయం — పెద్దవడుగూరు</h1>
+<div>Work Records & Deadline Reminder Tool</div>
 </header>
 
 <main>
-  <section class="card">
-    <h2>1. ఉద్యోగి లాగిన్</h2>
-    <p class="small">మొదట మీ కార్యాలయానికి అనుమతించిన ఇమెయిల్‌తో ఖాతా సృష్టించండి లేదా లాగిన్ అవ్వండి.</p>
-    <div class="grid">
-      <div><label for="email">Email</label><input id="email" type="email" autocomplete="username"></div>
-      <div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password"></div>
-    </div>
-    <div class="grid">
-      <button id="loginBtn">Login</button>
-      <button id="signupBtn" class="secondary">Create account</button>
-      <button id="logoutBtn" class="secondary hidden">Logout</button>
-    </div>
-    <p id="status">Firebase కనెక్షన్ ప్రారంభమవుతోంది...</p>
-  </section>
+<section class="card" id="loginCard">
+<h2>పాస్‌వర్డ్ నమోదు చేయండి</h2>
+<label for="officePassword">Office Password</label>
+<input id="officePassword" type="password" placeholder="పాస్‌వర్డ్" autocomplete="current-password">
+<button id="unlockBtn">ప్రవేశించండి</button>
+<p id="loginError" class="small"></p>
+</section>
 
-  <section id="workArea" class="hidden">
-    <section class="card">
-      <h2>2. కొత్త పని నమోదు</h2>
-      <form id="recordForm">
-        <div class="grid">
-          <div><label for="work">పని / దరఖాస్తు రకం *</label><input id="work" required placeholder="ఉదా: PGRS / Mutation"></div>
-          <div><label for="applicant">దరఖాస్తుదారు పేరు *</label><input id="applicant" required></div>
-          <div><label for="refNo">రిఫరెన్స్ నంబర్</label><input id="refNo"></div>
-          <div><label for="staff">బాధ్యతగల ఉద్యోగి పేరు</label><input id="staff"></div>
-          <div><label for="phone">WhatsApp నంబర్ (దేశ కోడ్‌తో) *</label><input id="phone" required inputmode="tel" placeholder="919876543210"></div>
-          <div><label for="startDate">ప్రారంభ తేదీ *</label><input id="startDate" type="date" required></div>
-          <div><label for="days">గడువు రోజులు *</label><input id="days" type="number" min="1" max="3650" value="25" required></div>
-          <div><label for="dueDate">గడువు తేదీ (ఆటోమేటిక్)</label><input id="dueDate" type="date" readonly></div>
-        </div>
-        <p><label for="notes">వివరాలు / సూచనలు</label><textarea id="notes"></textarea></p>
-        <p><label for="document">పత్రం (PDF/JPG/PNG, గరిష్ఠం 10 MB)</label><input id="document" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></p>
-        <p class="small">పత్రాల్లో ఆధార్, బ్యాంకు వివరాలు లేదా ఇతర సున్నితమైన సమాచారం ఉంటే అవసరం లేనప్పుడు అప్‌లోడ్ చేయవద్దు.</p>
-        <button id="saveBtn" type="submit">పని భద్రపరచండి</button>
-      </form>
-    </section>
+<div id="appArea" class="hidden">
+<section class="card">
+<h2>కొత్త పని నమోదు</h2>
+<form id="recordForm">
+<div class="grid">
+<div><label for="work">పని / దరఖాస్తు రకం *</label><input id="work" required placeholder="ఉదా: PGRS / Mutation"></div>
+<div><label for="applicant">దరఖాస్తుదారు పేరు *</label><input id="applicant" required></div>
+<div><label for="refNo">రిఫరెన్స్ నంబర్</label><input id="refNo"></div>
+<div><label for="staff">బాధ్యతగల ఉద్యోగి పేరు</label><input id="staff"></div>
+<div><label for="phone">WhatsApp నంబర్ (దేశ కోడ్‌తో)</label><input id="phone" inputmode="numeric" placeholder="919876543210"></div>
+<div><label for="startDate">ప్రారంభ తేదీ *</label><input id="startDate" type="date" required></div>
+<div><label for="days">గడువు రోజులు *</label><input id="days" type="number" min="1" max="3650" value="25" required></div>
+<div><label for="dueDate">గడువు తేదీ</label><input id="dueDate" type="date" readonly></div>
+</div>
+<p><label for="notes">వివరాలు / సూచనలు</label><textarea id="notes"></textarea></p>
+<p><label for="document">పత్రం (PDF/JPG/PNG, గరిష్ఠం 10 MB)</label><input id="document" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></p>
+<p class="small">ఈ ప్రాథమిక వెర్షన్‌లో రికార్డులు ఈ బ్రౌజర్‌లోనే నిల్వ ఉంటాయి. బ్రౌజర్ డేటా తొలగితే రికార్డులు పోవచ్చు. పత్రాలు Firebase Storage కు అప్‌లోడ్ కావు.</p>
+<button type="submit" id="saveBtn">పని భద్రపరచండి</button>
+</form>
+</section>
 
-    <section class="card">
-      <h2>3. నమోదు చేసిన పనులు</h2>
-      <input id="search" placeholder="పేరు / రిఫరెన్స్ / పని ద్వారా వెతకండి">
-      <div id="records"><p class="small">రికార్డులు లోడ్ అవుతున్నాయి...</p></div>
-    </section>
-  </section>
+<section class="card">
+<h2>నమోదు చేసిన పనులు</h2>
+<input id="search" placeholder="పేరు / రిఫరెన్స్ / పని ద్వారా వెతకండి">
+<div class="grid">
+<button id="exportBtn" class="secondary" type="button">CSV డౌన్‌లోడ్</button>
+<button id="logoutBtn" class="secondary" type="button">లాక్ చేయండి</button>
+</div>
+<p id="message">సిద్ధంగా ఉంది.</p>
+<div id="records"></div>
+</section>
+</div>
 
-  <section class="card">
-    <h2>గమనిక</h2>
-    <p class="small">ఈ వెబ్‌పేజీ గడువు తేదీని లెక్కిస్తుంది. గడువు రోజున WhatsApp సందేశాన్ని సర్వర్ నుంచి ఆటోమేటిక్‌గా పంపడానికి Firebase Cloud Functions మరియు అధికారిక WhatsApp Business Platform API వేరుగా ఏర్పాటు చేయాలి.</p>
-  </section>
+<section class="card">
+<h2>ఆటోమేటిక్ WhatsApp రిమైండర్</h2>
+<p class="small">ఈ HTML వెర్షన్ WhatsApp సందేశాన్ని సిద్ధం చేస్తుంది; మీరు WhatsApp లో Send నొక్కాలి. గడువు రోజున ఆటోమేటిక్‌గా పంపడానికి అధికారిక WhatsApp Cloud API, Firebase Cloud Functions, భద్రమైన సర్వర్ రహస్యాలు అవసరం. పాస్‌వర్డ్ మాత్రమే పెట్టడం వల్ల Firebase డేటా భద్రత ఏర్పడదు.</p>
+</section>
 </main>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
-  signInWithEmailAndPassword, signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-  getFirestore, collection, addDoc, query, where, getDocs,
-  updateDoc, doc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  getStorage, ref, uploadBytes
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+<script>
+"use strict";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAPaIA-OPJnKH1X2XZKXG3DF4U-J6UY6OY",
-  authDomain: "mropvg-d2e6d.firebaseapp.com",
-  projectId: "mropvg-d2e6d",
-  storageBucket: "mropvg-d2e6d.firebasestorage.app",
-  messagingSenderId: "415955400979",
-  appId: "1:415955400979:web:3593e787f1309a024b42e6",
-  measurementId: "G-J22E1XRQSK"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+const OFFICE_PASSWORD = "1207";
+const STORAGE_KEY = "peddavaduguru_reminder_records_v1";
 const $ = id => document.getElementById(id);
-let currentUser = null;
-let allRecords = [];
 
-function message(text) { $("status").textContent = text; }
+let records = [];
+let unlocked = false;
 
-function localToday() {
+function todayLocal(){
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
-$("startDate").value = localToday();
 
-function calculateDueDate() {
+$("startDate").value = todayLocal();
+
+function calcDue(){
   const start = $("startDate").value;
   const days = Number($("days").value);
-  if (!start || !Number.isInteger(days) || days < 1 || days > 3650) {
+  if(!start || !Number.isInteger(days) || days < 1 || days > 3650){
     $("dueDate").value = "";
     return;
   }
-  const d = new Date(start + "T12:00:00");
-  d.setDate(d.getDate() + days);
-  $("dueDate").value =
-    `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  const d = new Date(start+"T12:00:00");
+  d.setDate(d.getDate()+days);
+  $("dueDate").value = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
-$("startDate").addEventListener("change", calculateDueDate);
-$("days").addEventListener("input", calculateDueDate);
-calculateDueDate();
 
-$("signupBtn").addEventListener("click", async () => {
-  try {
-    await createUserWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
-    message("ఖాతా సృష్టించబడింది. మీ ఇమెయిల్‌ను ధృవీకరించండి.");
-  } catch (e) { message("ఖాతా సృష్టించలేకపోయాం: " + e.message); }
-});
+$("startDate").addEventListener("change",calcDue);
+$("days").addEventListener("input",calcDue);
+calcDue();
 
-$("loginBtn").addEventListener("click", async () => {
-  try {
-    await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
-    message("లాగిన్ విజయవంతమైంది.");
-  } catch (e) { message("లాగిన్ కాలేదు: " + e.message); }
-});
-
-$("logoutBtn").addEventListener("click", () => signOut(auth));
-
-onAuthStateChanged(auth, async user => {
-  currentUser = user;
-  $("workArea").classList.toggle("hidden", !user);
-  $("logoutBtn").classList.toggle("hidden", !user);
-  $("loginBtn").classList.toggle("hidden", !!user);
-  $("signupBtn").classList.toggle("hidden", !!user);
-  if (user) {
-    message("లాగిన్: " + user.email);
-    await loadRecords();
-  } else {
-    allRecords = [];
-    $("records").innerHTML = "";
-    message("దయచేసి లాగిన్ అవ్వండి.");
+$("unlockBtn").addEventListener("click",()=>{
+  if($("officePassword").value === OFFICE_PASSWORD){
+    unlocked = true;
+    $("loginCard").classList.add("hidden");
+    $("appArea").classList.remove("hidden");
+    $("loginError").textContent = "";
+    $("officePassword").value = "";
+    loadRecords();
+  }else{
+    $("loginError").textContent = "పాస్‌వర్డ్ తప్పు. మళ్లీ ప్రయత్నించండి.";
   }
 });
 
-$("recordForm").addEventListener("submit", async event => {
-  event.preventDefault();
-  if (!currentUser) return message("ముందుగా లాగిన్ అవ్వండి.");
-  calculateDueDate();
-  if (!$("dueDate").value) return alert("గడువు తేదీ సరిచూడండి.");
+$("officePassword").addEventListener("keydown",e=>{
+  if(e.key === "Enter") $("unlockBtn").click();
+});
+
+$("logoutBtn").addEventListener("click",()=>{
+  unlocked = false;
+  $("appArea").classList.add("hidden");
+  $("loginCard").classList.remove("hidden");
+  $("records").replaceChildren();
+});
+
+function loadRecords(){
+  try{
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    records = Array.isArray(data) ? data : [];
+  }catch(e){
+    records = [];
+  }
+  renderRecords();
+}
+
+function saveRecords(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(records));
+}
+
+$("recordForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  if(!unlocked) return;
+  calcDue();
 
   const file = $("document").files[0];
-  if (file && file.size > 10 * 1024 * 1024) return alert("ఫైల్ 10 MB కంటే చిన్నదిగా ఉండాలి.");
-  if (file && !["application/pdf","image/jpeg","image/png"].includes(file.type)) {
-    return alert("PDF, JPG లేదా PNG ఫైల్ మాత్రమే ఎంచుకోండి.");
-  }
-
-  $("saveBtn").disabled = true;
-  try {
-    let storagePath = "";
-    if (file) {
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      storagePath = `users/${currentUser.uid}/${Date.now()}_${safeName}`;
-      await uploadBytes(ref(storage, storagePath), file, {contentType:file.type});
-    }
-
-    await addDoc(collection(db, "peddavadugur_records"), {
-      ownerUid: currentUser.uid,
-      work: $("work").value.trim(),
-      applicant: $("applicant").value.trim(),
-      refNo: $("refNo").value.trim(),
-      staff: $("staff").value.trim(),
-      phone: $("phone").value.replace(/\D/g, ""),
-      startDate: $("startDate").value,
-      days: Number($("days").value),
-      dueDate: $("dueDate").value,
-      notes: $("notes").value.trim(),
-      storagePath,
-      status: "pending",
-      reminderSent: false,
-      createdAt: serverTimestamp()
-    });
-
-    $("recordForm").reset();
-    $("startDate").value = localToday();
-    $("days").value = "25";
-    calculateDueDate();
-    message("పని వివరాలు భద్రపరచబడ్డాయి.");
-    await loadRecords();
-  } catch (e) {
-    message("సేవ్ చేయడంలో సమస్య: " + e.message);
-  } finally {
-    $("saveBtn").disabled = false;
-  }
-});
-
-async function loadRecords() {
-  if (!currentUser) return;
-  $("records").innerHTML = "<p>లోడ్ అవుతోంది...</p>";
-  try {
-    const q = query(
-      collection(db, "peddavadugur_records"),
-      where("ownerUid", "==", currentUser.uid)
-    );
-    const snap = await getDocs(q);
-    allRecords = snap.docs.map(x => ({id:x.id, ...x.data()}));
-    allRecords.sort((a,b) => (a.dueDate || "").localeCompare(b.dueDate || ""));
-    renderRecords();
-  } catch (e) {
-    $("records").textContent = "రికార్డులు లోడ్ కాలేదు: " + e.message;
-  }
-}
-
-function renderRecords() {
-  const term = $("search").value.toLowerCase().trim();
-  const filtered = allRecords.filter(r =>
-    [r.work,r.applicant,r.refNo,r.staff].some(v => String(v || "").toLowerCase().includes(term))
-  );
-  $("records").innerHTML = "";
-  if (!filtered.length) {
-    $("records").textContent = "రికార్డులు లేవు.";
+  if(file && file.size > 10*1024*1024){
+    alert("ఫైల్ 10 MB కంటే చిన్నదిగా ఉండాలి.");
     return;
   }
-  for (const r of filtered) {
-    const el = document.createElement("div");
-    el.className = "record";
-    const title = document.createElement("h3");
-    title.textContent = `${r.work || "పని"} — ${r.applicant || ""}`;
-    el.append(title);
+  if(file && !["application/pdf","image/jpeg","image/png"].includes(file.type)){
+    alert("PDF, JPG లేదా PNG ఫైల్ మాత్రమే ఎంచుకోండి.");
+    return;
+  }
 
-    const details = document.createElement("p");
-    details.textContent =
-      `రిఫరెన్స్: ${r.refNo || "-"} | ఉద్యోగి: ${r.staff || "-"}\n` +
-      `ప్రారంభం: ${r.startDate || "-"} | గడువు: ${r.dueDate || "-"} (${r.days || "-"} రోజులు)\n` +
-      `ఫోన్: ${r.phone || "-"} | స్థితి: ${r.status || "pending"}\n` +
-      `వివరాలు: ${r.notes || "-"}`;
-    details.style.whiteSpace = "pre-line";
-    el.append(details);
+  const r = {
+    id: Date.now().toString()+"_"+Math.random().toString(36).slice(2,7),
+    work:$("work").value.trim(),
+    applicant:$("applicant").value.trim(),
+    refNo:$("refNo").value.trim(),
+    staff:$("staff").value.trim(),
+    phone:$("phone").value.replace(/\D/g,""),
+    startDate:$("startDate").value,
+    days:Number($("days").value),
+    dueDate:$("dueDate").value,
+    notes:$("notes").value.trim(),
+    fileName:file ? file.name : "",
+    status:"pending",
+    reminderSent:false,
+    createdAt:new Date().toISOString()
+  };
 
-    if (r.storagePath) {
-      const fileText = document.createElement("p");
-      fileText.className = "small";
-      fileText.textContent = "పత్రం Firebase Storage లో భద్రపరచబడింది.";
-      el.append(fileText);
-    }
+  records.unshift(r);
+  try{
+    saveRecords();
+    $("message").textContent = "పని వివరాలు ఈ బ్రౌజర్‌లో భద్రపరచబడ్డాయి.";
+  }catch(err){
+    records.shift();
+    alert("రికార్డు సేవ్ కాలేదు. బ్రౌజర్ నిల్వ నిండిపోయి ఉండవచ్చు.");
+    return;
+  }
+
+  $("recordForm").reset();
+  $("startDate").value = todayLocal();
+  $("days").value = "25";
+  calcDue();
+  renderRecords();
+});
+
+function addText(parent,tag,text){
+  const el = document.createElement(tag);
+  el.textContent = text;
+  parent.appendChild(el);
+  return el;
+}
+
+function renderRecords(){
+  const container = $("records");
+  container.replaceChildren();
+  const term = $("search").value.trim().toLowerCase();
+
+  const shown = records.filter(r=>
+    [r.work,r.applicant,r.refNo,r.staff].some(v=>String(v||"").toLowerCase().includes(term))
+  );
+
+  if(!shown.length){
+    addText(container,"p","రికార్డులు లేవు.");
+    return;
+  }
+
+  shown.forEach(r=>{
+    const card = document.createElement("div");
+    card.className = "record";
+
+    addText(card,"h3",(r.work||"పని")+" — "+(r.applicant||""));
+    addText(card,"p",
+      "రిఫరెన్స్: "+(r.refNo||"-")+
+      "\nఉద్యోగి: "+(r.staff||"-")+
+      "\nప్రారంభ తేదీ: "+(r.startDate||"-")+
+      "\nగడువు తేదీ: "+(r.dueDate||"-")+
+      "\nగడువు: "+(r.days||"-")+" రోజులు"+
+      "\nWhatsApp: "+(r.phone||"-")+
+      "\nవివరాలు: "+(r.notes||"-")+
+      "\nఫైల్ పేరు: "+(r.fileName||"పత్రం జోడించలేదు")
+    );
+
+    const badge = document.createElement("span");
+    badge.className = "status";
+    badge.textContent = r.status === "completed" ? "పూర్తయింది" : "పెండింగ్";
+    card.appendChild(badge);
 
     const share = document.createElement("button");
     share.textContent = "WhatsApp మెసేజ్ సిద్ధం చేయండి";
-    share.onclick = () => {
-      const text = `పని రిమైండర్\nపని: ${r.work}\nపేరు: ${r.applicant}\nరిఫరెన్స్: ${r.refNo || "-"}\nగడువు తేదీ: ${r.dueDate}\nదయచేసి గడువులోగా పూర్తి చేయండి.`;
-      window.open("https://wa.me/" + r.phone + "?text=" + encodeURIComponent(text), "_blank");
+    share.onclick = ()=>{
+      if(!r.phone){
+        alert("ముందుగా WhatsApp నంబర్ నమోదు చేయండి.");
+        return;
+      }
+      const text =
+        "పని రిమైండర్\n"+
+        "కార్యాలయం: తహసీల్దార్ కార్యాలయం, పెద్దవడగూరు\n"+
+        "పని: "+r.work+"\n"+
+        "దరఖాస్తుదారు: "+r.applicant+"\n"+
+        "రిఫరెన్స్: "+(r.refNo||"-")+"\n"+
+        "గడువు తేదీ: "+r.dueDate+"\n"+
+        "దయచేసి నిర్ణీత గడువులోగా పూర్తి చేయండి.";
+      window.open("https://wa.me/"+r.phone+"?text="+encodeURIComponent(text),"_blank");
     };
-    el.append(share);
+    card.appendChild(share);
 
-    if (r.status !== "completed") {
+    if(r.status !== "completed"){
       const done = document.createElement("button");
       done.className = "secondary";
       done.textContent = "పని పూర్తయింది";
-      done.onclick = async () => {
-        try {
-          await updateDoc(doc(db, "peddavadugur_records", r.id), {
-            status:"completed", completedAt:serverTimestamp()
-          });
-          await loadRecords();
-        } catch (e) { message("స్థితి మార్చలేకపోయాం: " + e.message); }
+      done.onclick = ()=>{
+        r.status = "completed";
+        saveRecords();
+        renderRecords();
       };
-      el.append(done);
-    } else {
-      const badge = document.createElement("span");
-      badge.className = "pill";
-      badge.textContent = "పూర్తయింది";
-      el.append(badge);
+      card.appendChild(done);
     }
-    $("records").append(el);
-  }
+
+    const remove = document.createElement("button");
+    remove.className = "danger";
+    remove.textContent = "రికార్డు తొలగించండి";
+    remove.onclick = ()=>{
+      if(confirm("ఈ రికార్డును తొలగించాలా?")){
+        records = records.filter(x=>x.id !== r.id);
+        saveRecords();
+        renderRecords();
+      }
+    };
+    card.appendChild(remove);
+    container.appendChild(card);
+  });
 }
-$("search").addEventListener("input", renderRecords);
+
+$("search").addEventListener("input",renderRecords);
+
+$("exportBtn").addEventListener("click",()=>{
+  if(!unlocked) return;
+  const cols = ["work","applicant","refNo","staff","phone","startDate","days","dueDate","notes","status"];
+  const quote = v => '"'+String(v??"").replace(/"/g,'""')+'"';
+  const csv = [cols.join(","),...records.map(r=>cols.map(c=>quote(r[c])).join(","))].join("\r\n");
+  const blob = new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Peddavaduguru_Reminder_Records.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+});
 </script>
 </body>
 </html>
