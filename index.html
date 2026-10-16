@@ -7,9 +7,6 @@
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap');
@@ -19,47 +16,61 @@
 <body class="bg-slate-100 min-h-screen text-slate-800">
 
   <!-- ==================== LOGIN SCREEN ==================== -->
-  <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-md px-4">
+  <div id="loginScreen" style="display: flex;" class="fixed inset-0 z-50 items-center justify-center bg-slate-900/85 backdrop-blur-md px-4">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 border border-slate-200 text-center">
+      
       <div class="w-16 h-16 mx-auto bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-4 border border-emerald-200 shadow-inner">
-        <i data-lucide="building-2" class="w-8 h-8"></i>
+        <!-- Building SVG Icon -->
+        <svg class="w-8 h-8 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M3 7v14M21 7v14M6 7V3h12v4M9 10h1m4 0h1M9 14h1m4 0h1M9 18h1m4 0h1"/>
+        </svg>
       </div>
+
       <h2 class="text-xl font-bold text-slate-900 mb-1">స్వాగతం</h2>
       <h1 class="text-base font-semibold text-emerald-800 mb-6">తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు మండలం</h1>
       
       <div class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">రహస్య కోడ్ (PIN)</label>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">రహస్య కోడ్ (PIN : 1111)</label>
           <div class="relative">
-            <input type="password" id="pinInput" maxlength="6" placeholder="••••" 
+            <input type="password" 
+                   id="pinInput" 
+                   maxlength="4" 
+                   inputmode="numeric"
+                   pattern="[0-9]*"
+                   placeholder="••••" 
+                   autocomplete="off"
+                   oninput="checkPinLive(this.value)"
                    onkeydown="if(event.key === 'Enter') handleLogin()"
                    class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:outline-none text-center tracking-widest text-2xl font-mono">
-            <span class="absolute inset-y-0 right-4 flex items-center text-slate-400 pointer-events-none">
-              <i data-lucide="lock" class="w-5 h-5"></i>
-            </span>
           </div>
         </div>
 
-        <p id="loginError" class="text-xs font-semibold text-rose-600 hidden bg-rose-50 p-2.5 rounded-lg border border-rose-200 flex items-center gap-1.5 justify-center">
-          <i data-lucide="alert-circle" class="w-4 h-4"></i> తప్పుడు పిన్ నంబర్! మళ్లీ ప్రయత్నించండి.
+        <p id="loginError" style="display: none;" class="text-xs font-semibold text-rose-600 bg-rose-50 p-2.5 rounded-lg border border-rose-200">
+          ⚠️ తప్పుడు పిన్ నంబర్! మళ్లీ ప్రయత్నించండి.
         </p>
 
-        <button type="button" onclick="handleLogin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-semibold shadow-md transition-all flex items-center justify-center gap-2">
+        <button type="button" 
+                id="loginBtn"
+                onclick="handleLogin()" 
+                class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-xl font-semibold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>ప్రవేశించండి</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          <span>➔</span>
         </button>
       </div>
     </div>
   </div>
 
   <!-- ==================== MAIN DASHBOARD ==================== -->
-  <div id="mainDashboard" class="hidden">
+  <div id="mainDashboard" style="display: none;">
     <!-- Header -->
     <header class="bg-gradient-to-r from-emerald-800 via-teal-700 to-cyan-800 text-white shadow-lg sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3">
         <div class="flex items-center space-x-3">
           <div class="bg-white/10 p-2 rounded-xl backdrop-blur-md">
-            <i data-lucide="building-2" class="w-7 h-7 text-amber-300"></i>
+            <svg class="w-7 h-7 text-amber-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M3 7v14M21 7v14M6 7V3h12v4M9 10h1m4 0h1M9 14h1m4 0h1M9 18h1m4 0h1"/>
+            </svg>
           </div>
           <div>
             <h1 class="text-lg md:text-xl font-bold tracking-tight">తహసీల్దార్ కార్యాలయం</h1>
@@ -72,8 +83,8 @@
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             ఆన్‌లైన్ డిస్పాచ్ సిస్టమ్
           </div>
-          <button onclick="handleLogout()" class="text-xs bg-rose-600/80 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition">
-            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> లాగౌట్
+          <button onclick="handleLogout()" class="text-xs bg-rose-600/90 hover:bg-rose-700 text-white px-3.5 py-2 rounded-lg font-medium transition cursor-pointer">
+            లాగౌట్ 🚪
           </button>
         </div>
       </div>
@@ -84,8 +95,7 @@
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="border-b border-slate-100 bg-slate-50/70 px-6 py-4 flex items-center justify-between">
           <div class="flex items-center space-x-2">
-            <i data-lucide="send" class="w-5 h-5 text-teal-600"></i>
-            <h2 class="text-base font-semibold text-slate-800">సిబ్బందికి (VRO/RI) ఆదేశాలు / అర్జీ పంపే ఫారమ్</h2>
+            <h2 class="text-base font-semibold text-slate-800">📤 సిబ్బందికి (VRO/RI) ఆదేశాలు / అర్జీ పంపే ఫారమ్</h2>
           </div>
           <span class="text-xs font-medium text-slate-500">* ఖచ్చితమైన వివరాలు నమోదు చేయండి</span>
         </div>
@@ -96,43 +106,34 @@
             <!-- Revenue Category Dropdown -->
             <div>
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జీ రకం (Revenue Category)</label>
-              <div class="relative">
-                <select id="appType" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition appearance-none">
-                  <option value="ROR / మ్యుటేషన్">ROR / మ్యుటేషన్</option>
-                  <option value="PGRS (జగనన్నకు చెబుదాం / మీసేవ)">PGRS అర్జీ</option>
-                  <option value="మండల అప్లికేషన్">మండల అప్లికేషన్</option>
-                  <option value="పట్టాదారు పాస్ పుస్తకం">పట్టాదారు పాస్ పుస్తకం</option>
-                  <option value="భూ సరిహద్దుల వివాదం (F-Line)">భూ సరిహద్దుల వివాదం (F-Line)</option>
-                  <option value="ఇతరములు">ఇతరములు</option>
-                </select>
-                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5 pointer-events-none"></i>
-              </div>
+              <select id="appType" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition">
+                <option value="ROR / మ్యుటేషన్">ROR / మ్యుటేషన్</option>
+                <option value="PGRS (స్పందన / గ్రీవెన్స్)">PGRS అర్జీ</option>
+                <option value="మండల అప్లికేషన్">మండల అప్లికేషన్</option>
+                <option value="పట్టాదారు పాస్ పుస్తకం">పట్టాదారు పాస్ పుస్తకం</option>
+                <option value="భూ సరిహద్దుల వివాదం (F-Line)">భూ సరిహద్దుల వివాదం (F-Line)</option>
+                <option value="ఇతరములు">ఇతరములు</option>
+              </select>
             </div>
 
             <!-- Applicant Name -->
             <div>
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జిదారుని పేరు (Applicant Name)</label>
-              <div class="relative">
-                <input type="text" id="applicantName" placeholder="ఉదా: జి. విజయ్" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition">
-                <i data-lucide="user-check" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
-              </div>
+              <input type="text" id="applicantName" placeholder="ఉదా: జి. విజయ్" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition">
             </div>
 
             <!-- Reference Number -->
             <div>
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">రిఫరెన్స్ / అర్జీ నంబర్ (Ref No.)</label>
-              <div class="relative">
-                <input type="text" id="refNo" placeholder="F-8/2026/నోటీస్-12" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition">
-                <i data-lucide="hash" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
-              </div>
+              <input type="text" id="refNo" placeholder="F-8/2026/నోటీస్-12" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-mono">
             </div>
 
             <!-- Staff Details & Contact Picker -->
             <div>
               <div class="flex items-center justify-between mb-2">
                 <label class="text-xs font-bold text-slate-700 uppercase tracking-wider">సిబ్బంది పేరు (Staff / VRO)</label>
-                <button type="button" onclick="pickPhoneContact()" class="text-xs text-teal-600 hover:text-teal-700 flex items-center gap-1 font-semibold">
-                  <i data-lucide="contact" class="w-3.5 h-3.5"></i> ఫోన్‌బుక్
+                <button type="button" onclick="pickPhoneContact()" class="text-xs text-teal-600 hover:text-teal-700 font-semibold cursor-pointer">
+                  📇 ఫోన్‌బుక్
                 </button>
               </div>
               <input type="text" id="staffName" placeholder="పేరు నమోదు చేయండి" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition">
@@ -145,7 +146,7 @@
                 <span class="inline-flex items-center px-3.5 rounded-l-xl border border-r-0 border-slate-300 bg-slate-100 text-slate-600 text-sm font-semibold">
                   🇮🇳 +91
                 </span>
-                <input type="tel" id="staffPhone" pattern="[0-9]{10}" maxlength="10" placeholder="9876543210" required class="w-full bg-slate-50 border border-slate-300 rounded-r-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition">
+                <input type="tel" id="staffPhone" pattern="[0-9]{10}" maxlength="10" placeholder="9876543210" required class="w-full bg-slate-50 border border-slate-300 rounded-r-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-mono">
               </div>
             </div>
 
@@ -184,11 +185,11 @@
 
           <!-- Form Submission Actions -->
           <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-slate-100">
-            <button type="button" onclick="shareViaNative()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition">
-              <i data-lucide="share-2" class="w-4 h-4"></i> ఫైల్‌తో కలిపి షేర్ చేయండి (Web Share)
+            <button type="button" onclick="shareViaNative()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition cursor-pointer">
+              📎 ఫైల్‌తో షేర్ చేయండి (Share)
             </button>
-            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-sm transition">
-              <i data-lucide="message-square" class="w-4 h-4"></i> WhatsApp ద్వారా ఆదేశాలు జారీ చేయండి
+            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-sm transition cursor-pointer">
+              💬 WhatsApp లో ఆదేశాలు పంపండి
             </button>
           </div>
         </form>
@@ -197,9 +198,8 @@
       <!-- Dispatch Log & Status Dashboard -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50/70">
-          <div class="flex items-center gap-2">
-            <i data-lucide="clipboard-list" class="w-5 h-5 text-teal-600"></i>
-            <h3 class="text-base font-semibold text-slate-800">పంపించిన ఆదేశాలు & విచారణ నివేదికల ట్రాకింగ్ (Pending / Closed)</h3>
+          <div>
+            <h3 class="text-base font-semibold text-slate-800">📋 పంపించిన ఆదేశాలు & విచారణ నివేదికల ట్రాకింగ్</h3>
           </div>
           <div class="text-xs text-slate-500 font-medium" id="statsCount">మొత్తం: 0 రికార్డులు</div>
         </div>
@@ -213,12 +213,12 @@
                 <th class="px-6 py-3.5">సిబ్బంది (VRO/RI)</th>
                 <th class="px-6 py-3.5">గడువు తేదీ</th>
                 <th class="px-6 py-3.5">పెండింగ్ రోజులు</th>
-                <th class="px-6 py-3.5">నివేదిక స్థితి (Status)</th>
+                <th class="px-6 py-3.5">నివేదిక స్థితి</th>
                 <th class="px-6 py-3.5 text-right">చర్యలు</th>
               </tr>
             </thead>
             <tbody id="dispatchTableBody" class="divide-y divide-slate-100">
-              <!-- Dynamically populated -->
+              <!-- Records dynamically render here -->
             </tbody>
           </table>
         </div>
@@ -226,39 +226,48 @@
     </main>
   </div>
 
+  <!-- ==================== JAVASCRIPT ==================== -->
   <script>
-    // ---------- Authentication ----------
+    // Live PIN Auto Check
+    function checkPinLive(val) {
+      if (val.trim() === "1111") {
+        handleLogin();
+      }
+    }
+
+    // Authentication Logic
     function handleLogin() {
       const pin = document.getElementById('pinInput').value.trim();
+      const loginScreen = document.getElementById('loginScreen');
+      const mainDashboard = document.getElementById('mainDashboard');
       const errorMsg = document.getElementById('loginError');
 
       if (pin === "1111") {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainDashboard').classList.remove('hidden');
-        errorMsg.classList.add('hidden');
+        loginScreen.style.setProperty('display', 'none', 'important');
+        mainDashboard.style.setProperty('display', 'block', 'important');
+        errorMsg.style.display = 'none';
+
         applyPresetDays(3);
         renderTable();
-        lucide.createIcons();
       } else {
-        errorMsg.classList.remove('hidden');
+        errorMsg.style.display = 'block';
         document.getElementById('pinInput').value = '';
         document.getElementById('pinInput').focus();
-        lucide.createIcons();
       }
     }
 
     function handleLogout() {
-      document.getElementById('loginScreen').style.display = 'flex';
-      document.getElementById('mainDashboard').classList.add('hidden');
+      document.getElementById('loginScreen').style.setProperty('display', 'flex', 'important');
+      document.getElementById('mainDashboard').style.setProperty('display', 'none', 'important');
       document.getElementById('pinInput').value = '';
-      document.getElementById('loginError').classList.add('hidden');
-      lucide.createIcons();
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('pinInput').focus();
     }
 
-    // Initialize Local Storage Records
+    // Initialize Records
     let records = JSON.parse(localStorage.getItem('peddavadugur_records') || '[]');
 
-    // Date Calculation Logic
+    // Date Calculation
     function addDaysToDate(days) {
       const target = new Date();
       target.setDate(target.getDate() + parseInt(days));
@@ -281,7 +290,7 @@
       }
     }
 
-    // Contact Picker API
+    // Contact Picker
     async function pickPhoneContact() {
       if ('contacts' in navigator && 'ContactsManager' in window) {
         try {
@@ -302,11 +311,11 @@
           alert('కాంటాక్ట్ ఎంపిక విఫలమైంది: ' + err.message);
         }
       } else {
-        alert('ఈ బ్రౌజర్‌లో కాంటాక్ట్ పికర్ అందుబాటులో లేదు. దయచేసి వివరాలను నేరుగా టైప్ చేయండి.');
+        alert('ఈ బ్రౌజర్‌లో ఆటోమేటిక్ కాంటాక్ట్ పికర్ అందుబాటులో లేదు. వివరాలను నేరుగా టైప్ చేయండి.');
       }
     }
 
-    // Format Telugu Template Notice
+    // Formatter
     function generateMessageText(item) {
       return `*తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*\n━━━━━━━━━━━━━━━━━━━━\n📌 *ఆదేశాలు*\n\n👤 *సిబ్బంది పేరు:* ${item.staffName}\n📂 *అర్జీ రకం :* ${item.appType}\n👤 *అర్జిదారుని పేరు :* ${item.applicantName}\n📄 *రిఫరెన్స్ నంబర్:* ${item.refNo}\n📅 *పరిష్కార గడువు తేదీ:* ${item.dueDate}\n\n⚠️ *గమనిక:* నిర్ణీత గడువులోగా క్షేత్రస్థాయి విచారణ పూర్తి చేసి తగిన నివేదికను కార్యాలయంలో సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
     }
@@ -393,4 +402,11 @@
 
     function deleteRecord(id) {
       if (confirm('ఈ రికార్డును తొలగించాలనుకుంటున్నారా?')) {
-        records = records.filter(r => r.id !== id
+        records = records.filter(r => r.id !== id);
+        localStorage.setItem('peddavadugur_records', JSON.stringify(records));
+        renderTable();
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElem
