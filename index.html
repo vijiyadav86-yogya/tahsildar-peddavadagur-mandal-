@@ -27,11 +27,12 @@
       <h2 class="text-xl font-bold text-slate-900 mb-1">స్వాగతం</h2>
       <h1 class="text-base font-semibold text-emerald-800 mb-6">తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు మండలం</h1>
       
-      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+      <div class="space-y-4">
         <div class="text-left">
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">రహస్య కోడ్ (PIN)</label>
           <div class="relative">
-            <input type="password" id="pinInput" maxlength="6" placeholder="••••" required 
+            <input type="password" id="pinInput" maxlength="6" placeholder="••••" 
+                   onkeydown="if(event.key === 'Enter') handleLogin()"
                    class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:outline-none text-center tracking-widest text-2xl font-mono">
             <span class="absolute inset-y-0 right-4 flex items-center text-slate-400 pointer-events-none">
               <i data-lucide="lock" class="w-5 h-5"></i>
@@ -43,11 +44,11 @@
           <i data-lucide="alert-circle" class="w-4 h-4"></i> తప్పుడు పిన్ నంబర్! మళ్లీ ప్రయత్నించండి.
         </p>
 
-        <button type="submit" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-semibold shadow-md transition-all flex items-center justify-center gap-2">
+        <button type="button" onclick="handleLogin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-semibold shadow-md transition-all flex items-center justify-center gap-2">
           <span>ప్రవేశించండి</span>
           <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </button>
-      </form>
+      </div>
     </div>
   </div>
 
@@ -227,14 +228,12 @@
 
   <script>
     // ---------- Authentication ----------
-    function handleLogin(e) {
-      e.preventDefault();
-      const pin = document.getElementById('pinInput').value;
+    function handleLogin() {
+      const pin = document.getElementById('pinInput').value.trim();
       const errorMsg = document.getElementById('loginError');
 
-      // Updated PIN: 1111
       if (pin === "1111") {
-        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainDashboard').classList.remove('hidden');
         errorMsg.classList.add('hidden');
         applyPresetDays(3);
@@ -243,14 +242,16 @@
       } else {
         errorMsg.classList.remove('hidden');
         document.getElementById('pinInput').value = '';
+        document.getElementById('pinInput').focus();
         lucide.createIcons();
       }
     }
 
     function handleLogout() {
-      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('loginScreen').style.display = 'flex';
       document.getElementById('mainDashboard').classList.add('hidden');
       document.getElementById('pinInput').value = '';
+      document.getElementById('loginError').classList.add('hidden');
       lucide.createIcons();
     }
 
@@ -392,7 +393,4 @@
 
     function deleteRecord(id) {
       if (confirm('ఈ రికార్డును తొలగించాలనుకుంటున్నారా?')) {
-        records = records.filter(r => r.id !== id);
-        localStorage.setItem('peddavadugur_records', JSON.stringify(records));
-        renderTable();
-    
+        records = records.filter(r => r.id !== id
