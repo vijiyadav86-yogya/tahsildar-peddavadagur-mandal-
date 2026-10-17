@@ -22,7 +22,34 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen pb-16">
 
-  <!-- Header -->
+  <!-- తహసీల్దార్ డాష్‌బోర్డ్ పాస్‌వర్డ్ విండో (PIN: 1111) -->
+  <div id="tahsildarAuthOverlay" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center border-2 border-amber-400">
+      <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+        <i data-lucide="crown" class="w-8 h-8 text-amber-600"></i>
+      </div>
+      <h2 class="text-xl font-extrabold text-slate-900 mb-1">తహసీల్దార్ వారి లాగిన్</h2>
+      <p class="text-xs text-slate-500 mb-6 font-medium">ప్రత్యేక డాష్‌బోర్డ్ & ఫైళ్ల పర్యవేక్షణ</p>
+      
+      <form id="tahsildarAuthForm" class="space-y-4">
+        <div class="text-left">
+          <label class="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-2 text-center">తహసీల్దార్ పిన్</label>
+          <input type="password" id="tahsildarPinInput" placeholder="••••" maxlength="10" required
+            class="w-full bg-amber-50/50 border border-amber-300 rounded-2xl px-4 py-3 text-center text-lg tracking-widest font-black outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition">
+          <p id="tahsildarAuthError" class="text-xs text-rose-600 font-bold mt-2 hidden text-center">తప్పుడు పిన్! (1111 అని నమోదు చేయండి)</p>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeTahsildarModal()" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-3 rounded-2xl transition">రద్దు</button>
+          <button type="submit" class="w-1/2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-3 rounded-2xl shadow-md transition flex items-center justify-center gap-1.5">
+            <i data-lucide="key" class="w-4 h-4"></i> లాగిన్
+          </button>
+        </div>
+      </form>
+      <p class="text-[11px] text-slate-400 mt-4">డాష్‌బోర్డ్ పిన్: <span class="font-mono font-bold text-amber-700">1111</span></p>
+    </div>
+  </div>
+
+  <!-- ప్రధాన హెడర్ -->
   <header class="bg-gradient-to-r from-teal-900 via-emerald-800 to-cyan-900 text-white shadow-xl sticky top-0 z-40 border-b border-emerald-500/20">
     <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3">
       <div class="flex items-center space-x-3.5">
@@ -39,9 +66,9 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2.5">
-        <!-- Dashboard Button -->
-        <button id="dashBtn" onclick="askDashboardPassword()" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-md border border-amber-300 transition active:scale-95">
-          <i data-lucide="lock" class="w-4 h-4 text-slate-950"></i>
+        <!-- తహసీల్దార్ డాష్‌బోర్డ్ బటన్ -->
+        <button onclick="openTahsildarModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-md border border-amber-300 transition active:scale-95">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-950"></i>
           తహసీల్దార్ డాష్‌బోర్డ్ (1111)
         </button>
 
@@ -55,7 +82,7 @@
 
   <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
-    <!-- Tahsildar Dashboard Section (ప్రత్యక్ష పర్యవేక్షణ నివేదిక & ప్రివ్యూలతో సహా) -->
+    <!-- తహసీల్దార్ ప్రత్యేక పర్యవేక్షణ ప్యానెల్ (PIN 1111 తో ఓపెన్ అవుతుంది) -->
     <section id="tahsildarDashboardSection" class="hidden bg-gradient-to-b from-amber-50/80 to-white rounded-3xl shadow-xl border-2 border-amber-300 p-6 md:p-8 space-y-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-amber-200 gap-3">
         <div class="flex items-center gap-3">
@@ -63,16 +90,16 @@
             <i data-lucide="crown" class="w-6 h-6"></i>
           </div>
           <div>
-            <h2 class="text-lg md:text-xl font-black text-slate-900">తహసీల్దార్ ప్రత్యేక పర్యవేక్షణ వేదిక (Live Minutes Tracker)</h2>
-            <p class="text-xs text-slate-600 font-semibold">పెద్దవడుగూరు మండల రెవెన్యూ అర్జీల సమీక్ష & అత్యవసర గడువుల నిర్వహణ</p>
+            <h2 class="text-lg md:text-xl font-black text-slate-900">తహసీల్దార్ ప్రత్యేక పర్యవేక్షణ వేదిక</h2>
+            <p class="text-xs text-slate-600 font-semibold">పెద్దవడుగూరు మండల రెవెన్యూ సమీక్ష & పెండింగ్ విశ్లేషణ</p>
           </div>
         </div>
-        <button onclick="closeDashboardView()" class="self-end md:self-auto text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+        <button onclick="hideTahsildarDashboard()" class="self-end md:self-auto text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-xl transition flex items-center gap-1">
           <i data-lucide="x" class="w-3.5 h-3.5"></i> డాష్‌బోర్డ్ మూసివేయి
         </button>
       </div>
 
-      <!-- Counters -->
+      <!-- కౌంటర్స్ -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
@@ -97,74 +124,67 @@
         </div>
         <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-bold text-emerald-700 uppercase">పరిష్కారమైనవి</p>
+            <p class="text-[11px] font-bold text-emerald-700 uppercase">నివేదిక వచ్చినవి</p>
             <h4 id="dashClosed" class="text-2xl font-black text-emerald-600">0</h4>
           </div>
           <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
         </div>
       </div>
 
-      <!-- Dashboard Table Controls -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-2">
-        <div class="flex items-center gap-2">
-          <input type="text" id="dashSearchInput" oninput="filterDashboardRecords()" placeholder="రిఫరెన్స్ / పేరు / సిబ్బందిని శోధించండి..." class="bg-white border border-slate-300 rounded-xl pl-3 pr-3 py-2 text-xs outline-none focus:ring-2 focus:ring-amber-500 w-64 font-medium shadow-sm">
-          <button onclick="exportToCSV()" class="inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold px-3.5 py-2 rounded-xl transition border border-emerald-300 shadow-sm">
-            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i> Excel డౌన్‌లోడ్
-          </button>
+      <!-- డాష్‌బోర్డ్ ఫైల్స్ టేబుల్ -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="folder-archive" class="w-4 h-4 text-amber-600"></i> అప్‌లోడ్ చేసిన అర్జీలు & సిబ్బంది కేటాయింపులు
+          </h3>
+          <span class="text-xs text-slate-400 font-medium">ఫైల్ నేరుగా చూసేందుకు ప్రివ్యూ క్లిక్ చేయండి</span>
         </div>
-        <div class="text-xs font-bold text-amber-900 bg-amber-100/80 px-3 py-1.5 rounded-xl border border-amber-300">
-          * త్వరగా గడువు ముగిసే అర్జీలు వరుసలో మొదటిగా చూపబడుతున్నాయి
-        </div>
-      </div>
 
-      <!-- Main Tracking Table with Live Countdown and Previews -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-700">
-            <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase font-bold text-[11px]">
+          <table class="w-full text-left text-xs text-slate-600">
+            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px]">
               <tr>
-                <th class="px-4 py-3">మిగిలిన సమయం (నిమిషాల్లో)</th>
-                <th class="px-4 py-3">రిఫరెన్స్ & అర్జీ రకం</th>
-                <th class="px-4 py-3">అర్జిదారుని పేరు</th>
-                <th class="px-4 py-3">సిబ్బంది (VRO/RI)</th>
-                <th class="px-4 py-3">గడువు తేదీ</th>
-                <th class="px-4 py-3">స్థితి మార్పు</th>
-                <th class="px-4 py-3 text-center">అర్జీ ప్రివ్యూ</th>
-                <th class="px-4 py-3 text-right">రిమైండర్</th>
+                <th class="px-4 py-2.5">రిఫరెన్స్ నంబర్</th>
+                <th class="px-4 py-2.5">అర్జిదారుని పేరు</th>
+                <th class="px-4 py-2.5">అర్జీ రకం</th>
+                <th class="px-4 py-2.5">సిబ్బంది (VRO/RI)</th>
+                <th class="px-4 py-2.5">గడువు తేదీ</th>
+                <th class="px-4 py-2.5">స్థితి</th>
+                <th class="px-4 py-2.5 text-center">అప్‌లోడ్ ఫైల్</th>
               </tr>
             </thead>
             <tbody id="tahsildarFilesTableBody" class="divide-y divide-slate-100 font-medium">
-              <!-- Rendered Dynamically -->
+              <!-- డైనమిక్‌గా లోడ్ అవుతుంది -->
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- Main Dispatch Form -->
+    <!-- ఆదేశాలు జారీ చేసే ఫారమ్ -->
     <div class="glass-card rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
       <div class="border-b border-slate-100 bg-slate-50/80 px-6 py-4 flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
-          <div class="p-1.5 bg-teal-100 text-teal-800 rounded-lg">
+          <div class="p-1.5 bg-teal-100 text-teal-800 rounded-xl">
             <i data-lucide="file-output" class="w-5 h-5"></i>
           </div>
           <h2 class="text-base font-bold text-slate-800">సిబ్బందికి ఆదేశాల జారీ & విచారణ కేటాయింపు</h2>
         </div>
         <span class="text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200 flex items-center gap-1.5">
-          <i data-lucide="check-check" class="w-3.5 h-3.5"></i> వాట్సాప్ అలర్ట్ సౌలభ్యం
+          <i data-lucide="check-check" class="w-3.5 h-3.5"></i> వాట్సాప్ నోటీస్ జారీ
         </span>
       </div>
 
-      <form id="dispatchForm" onsubmit="handleFormSubmit(event)" class="p-6 md:p-8 space-y-6">
+      <form id="dispatchForm" class="p-6 md:p-8 space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-          <!-- Revenue Category -->
+          <!-- అర్జీ రకం డ్రాప్‌డౌన్ -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జీ రకం (Revenue Category)</label>
             <div class="relative">
               <select id="appType" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition appearance-none font-medium shadow-sm">
                 <option value="ROR">ROR</option>
-                <option value="PGRS అర్జీ">PGRS అర్జీ</option>
+                <option value="PGRS (PGRS / మీసేవ)">PGRS అర్జీ</option>
                 <option value="మండలo అప్లికేషన్">మండలo అప్లికేషన్</option>
                 <option value="APSEVA కొరకు">APSEVA కొరకు</option>
                 <option value="భూ సరిహద్దుల వివాదం (F-Line)">భూ సరిహద్దుల వివాదం (F-Line)</option>
@@ -177,7 +197,7 @@
             </div>
           </div>
 
-          <!-- Applicant Name -->
+          <!-- అర్జిదారుని పేరు -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జిదారుని పేరు (Applicant Name)</label>
             <div class="relative">
@@ -186,7 +206,7 @@
             </div>
           </div>
 
-          <!-- Reference Number -->
+          <!-- రిఫరెన్స్ నంబర్ -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">రిఫరెన్స్ / అర్జీ నంబర్</label>
             <div class="relative">
@@ -195,15 +215,20 @@
             </div>
           </div>
 
-          <!-- Staff Details -->
+          <!-- సిబ్బంది వివరాలు & కాంటాక్ట్ పికర్ -->
           <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">సిబ్బంది పేరు (Staff / VRO / RI)</label>
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-xs font-bold text-slate-700 uppercase tracking-wider">సిబ్బంది పేరు (Staff / VRO)</label>
+                <button type="button" onclick="pickPhoneContact()" class="text-xs text-teal-700 hover:text-teal-800 flex items-center gap-1 font-bold">
+                  <i data-lucide="contact-2" class="w-4 h-4 text-teal-600"></i> కాంటాక్ట్ ఎంచుకో
+                </button>
+              </div>
               <input type="text" id="staffName" placeholder="సిబ్బంది పేరు నమోదు చేయండి" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">WhatsApp ఫోన్ నంబర్ (10 అంకెలు)</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">WhatsApp ఫోన్ నంబర్</label>
               <div class="relative flex shadow-sm rounded-2xl overflow-hidden">
                 <span class="inline-flex items-center px-4 border border-r-0 border-slate-300 bg-slate-100 text-slate-700 text-sm font-bold">
                   🇮🇳 +91
@@ -213,18 +238,18 @@
             </div>
           </div>
 
-          <!-- File Upload -->
+          <!-- ఫైల్ అప్‌లోడ్ -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జీ కాపీ (PDF / JPG / PNG)</label>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జీ కాపీ (PDF / JPG)</label>
             <div class="relative">
               <input type="file" id="fileUpload" accept="application/pdf,image/jpeg,image/png" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-800 hover:file:bg-teal-100 border border-slate-300 rounded-2xl p-1.5 bg-slate-50/80 shadow-sm cursor-pointer">
             </div>
           </div>
 
-          <!-- Deadline Box -->
+          <!-- గడువు లెక్కింపు -->
           <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 p-5 rounded-2xl border border-teal-200/80">
             <div>
-              <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider mb-2">గడువు రోజుల ఎంపిక</label>
+              <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider mb-2">గడువు రోజులు (1-10 ఎంపిక)</label>
               <select id="presetDays" onchange="applyPresetDays(this.value)" class="w-full bg-white border border-teal-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-600 outline-none font-semibold">
                 <option value="1">1 రోజు</option>
                 <option value="2">2 రోజులు</option>
@@ -248,46 +273,116 @@
 
         </div>
 
-        <!-- Submit Button -->
+        <!-- సబ్మిట్ బటన్ -->
         <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-slate-100">
           <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-sm font-bold px-7 py-3 rounded-2xl shadow-lg shadow-emerald-700/20 active:scale-95 transition">
-            <i data-lucide="send" class="w-4 h-4"></i> అర్జీ నమోదు & సేవ్ చేయి
+            <i data-lucide="send" class="w-4 h-4"></i> WhatsApp లో ఆదేశాలు పంపు & సేవ్ చేయి
           </button>
         </div>
       </form>
     </div>
 
-  </main>
+    <!-- పర్యవేక్షణ నివేదిక టేబుల్ (మినిట్స్ కౌంటర్స్ లేకుండా క్లీన్ వ్యూ) -->
+    <div class="glass-card rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/80">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-teal-100 text-teal-800 rounded-xl">
+            <i data-lucide="clipboard-list" class="w-5 h-5 text-teal-700"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-800">ప్రత్యక్ష పర్యవేక్షణ నివేదిక</h3>
+            <p class="text-xs text-slate-500 font-medium">అర్జీల కేటాయింపు, గడువు తేదీలు మరియు నివేదిక స్థితి</p>
+          </div>
+        </div>
+        
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="relative">
+            <input type="text" id="searchInput" oninput="filterRecords()" placeholder="రిఫరెన్స్ / పేరు శోధించండి..." class="bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs outline-none focus:ring-2 focus:ring-teal-500 w-52 font-medium shadow-sm">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5"></i>
+          </div>
 
-  <!-- PDF / Image Full Preview Modal -->
-  <div id="previewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-3xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-slate-300">
-      <div class="px-6 py-3.5 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
-        <h4 id="previewTitle" class="text-sm font-bold text-slate-800 flex items-center gap-2">
-          <i data-lucide="file-text" class="w-4 h-4 text-teal-600"></i> అర్జీ ఫైల్ ప్రివ్యూ
-        </h4>
-        <div class="flex items-center gap-2">
-          <a id="previewDownloadLink" href="#" target="_blank" download class="text-xs bg-teal-600 hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i> డౌన్‌లోడ్
-          </a>
-          <button onclick="closePreviewModal()" class="text-slate-500 hover:text-slate-800 p-1 rounded-lg">
-            <i data-lucide="x" class="w-5 h-5"></i>
+          <button onclick="exportToCSV()" class="inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold px-3.5 py-2 rounded-xl transition border border-emerald-300 shadow-sm">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i> Excel/CSV డౌన్‌లోడ్
           </button>
+
+          <div class="text-xs font-bold text-teal-800 bg-teal-100/70 px-3 py-2 rounded-xl" id="statsCount">మొత్తం: 0</div>
         </div>
       </div>
-      <div id="previewContainer" class="flex-1 bg-slate-200/50 p-2 overflow-auto flex items-center justify-center">
-        <!-- PDF / Image preview embeds dynamically -->
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600">
+          <thead class="bg-slate-100/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <tr>
+              <th class="px-5 py-3.5">రిఫరెన్స్ & అర్జీ రకం</th>
+              <th class="px-5 py-3.5">అర్జిదారుని పేరు</th>
+              <th class="px-5 py-3.5">సిబ్బంది (VRO/RI)</th>
+              <th class="px-5 py-3.5">పంపిన / రిమైండర్ సమయం</th>
+              <th class="px-5 py-3.5">పరిష్కార గడువు తేదీ</th>
+              <th class="px-5 py-3.5">నివేదిక స్థితి</th>
+              <th class="px-5 py-3.5 text-right">చర్యలు</th>
+            </tr>
+          </thead>
+          <tbody id="dispatchTableBody" class="divide-y divide-slate-100 font-medium">
+            <!-- డైనమిక్‌గా లోడ్ అవుతుంది -->
+          </tbody>
+        </table>
       </div>
     </div>
-  </div>
+
+  </main>
 
   <script>
     const TAHSILDAR_PIN = "1111";
-    let isDashboardUnlocked = false;
-    let records = [];
-    let filterQuery = "";
 
-    // Firebase Configurations
+    // పేజ్ లోడ్ కాగానే నేరుగా ప్రారంభం
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      applyPresetDays(3);
+      initFirebaseAndListen();
+    });
+
+    // తహసీల్దార్ డాష్‌బోర్డ్ పాస్‌వర్డ్ వెరిఫికేషన్
+    function openTahsildarModal() {
+      if (sessionStorage.getItem('tahsildar_dash_unlocked') === 'true') {
+        showTahsildarDashboard();
+      } else {
+        document.getElementById('tahsildarAuthOverlay').classList.remove('hidden');
+        document.getElementById('tahsildarPinInput').value = '';
+        document.getElementById('tahsildarAuthError').classList.add('hidden');
+        document.getElementById('tahsildarPinInput').focus();
+        lucide.createIcons();
+      }
+    }
+
+    function closeTahsildarModal() {
+      document.getElementById('tahsildarAuthOverlay').classList.add('hidden');
+    }
+
+    document.getElementById('tahsildarAuthForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const pin = document.getElementById('tahsildarPinInput').value;
+      const errorMsg = document.getElementById('tahsildarAuthError');
+      if (pin === TAHSILDAR_PIN) {
+        sessionStorage.setItem('tahsildar_dash_unlocked', 'true');
+        closeTahsildarModal();
+        showTahsildarDashboard();
+      } else {
+        errorMsg.classList.remove('hidden');
+        document.getElementById('tahsildarPinInput').value = '';
+      }
+    });
+
+    function showTahsildarDashboard() {
+      document.getElementById('tahsildarDashboardSection').classList.remove('hidden');
+      renderTahsildarDashboard();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function hideTahsildarDashboard() {
+      document.getElementById('tahsildarDashboardSection').classList.add('hidden');
+    }
+
+    // Firebase Credentials
     const firebaseConfig = {
       apiKey: "AIzaSyAPaIA-OPJnKH1X2XZKXG3DF4U-J6UY60Y",
       authDomain: "mropvg-d2e6d.firebaseapp.com",
@@ -298,17 +393,7 @@
     };
 
     let db;
-
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      applyPresetDays(3);
-      initFirebaseAndListen();
-      
-      // Auto refresh countdowns every minute
-      setInterval(() => {
-        if (isDashboardUnlocked) renderTahsildarDashboard();
-      }, 60000);
-    });
+    let records = [];
 
     function initFirebaseAndListen() {
       try {
@@ -316,118 +401,297 @@
           firebase.initializeApp(firebaseConfig);
         }
         db = firebase.firestore();
-        db.collection("dispatches").onSnapshot((snapshot) => {
-          records = [];
-          snapshot.forEach((doc) => {
-            records.push({ id: doc.id, ...doc.data() });
-          });
-          if (isDashboardUnlocked) {
-            renderTahsildarDashboard();
-          }
-        }, (error) => {
-          console.warn("Firestore లైవ్ కనెక్షన్ లోపం (Offline mode active):", error);
-        });
+        listenToRealtimeUpdates();
       } catch (err) {
-        console.error("Firebase init error:", err);
+        console.error("Firebase init failed: ", err);
       }
     }
 
-    // Dashboard Password Handling
-    function askDashboardPassword() {
-      if (isDashboardUnlocked) {
-        toggleDashboardView();
-        return;
-      }
-      
-      const pin = prompt("తహసీల్దార్ డాష్‌బోర్డ్ కోసం పిన్ (1111) నమోదు చేయండి:");
-      if (pin === TAHSILDAR_PIN) {
-        isDashboardUnlocked = true;
-        document.getElementById('dashBtn').innerHTML = `<i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-950"></i> డాష్‌బోర్డ్ (యాక్టివ్)`;
-        toggleDashboardView();
-      } else if (pin !== null) {
-        alert("తప్పుడు పిన్! దయచేసి సరైన పిన్ నమోదు చేయండి.");
-      }
+    function addDaysToDateTime(days) {
+      const target = new Date();
+      target.setDate(target.getDate() + parseInt(days));
+      target.setHours(17, 0, 0, 0);
+      const yyyy = target.getFullYear();
+      const mm = String(target.getMonth() + 1).padStart(2, '0');
+      const dd = String(target.getDate()).padStart(2, '0');
+      const hh = String(target.getHours()).padStart(2, '0');
+      const min = String(target.getMinutes()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
     }
 
-    function toggleDashboardView() {
-      const dash = document.getElementById('tahsildarDashboardSection');
-      if (dash.classList.contains('hidden')) {
-        dash.classList.remove('hidden');
-        renderTahsildarDashboard();
-        dash.scrollIntoView({ behavior: 'smooth' });
+    function applyPresetDays(val) {
+      document.getElementById('manualDays').value = '';
+      document.getElementById('dueDate').value = addDaysToDateTime(val);
+    }
+
+    function calculateCustomDate(val) {
+      if (val && parseInt(val) > 0) {
+        document.getElementById('dueDate').value = addDaysToDateTime(val);
       } else {
-        dash.classList.add('hidden');
+        applyPresetDays(document.getElementById('presetDays').value);
       }
-      lucide.createIcons();
     }
 
-    function closeDashboardView() {
-      document.getElementById('tahsildarDashboardSection').classList.add('hidden');
+    async function pickPhoneContact() {
+      if ('contacts' in navigator && 'ContactsManager' in window) {
+        try {
+          const props = ['name', 'tel'];
+          const contacts = await navigator.contacts.select(props, { multiple: false });
+          if (contacts.length > 0) {
+            const contact = contacts[0];
+            if (contact.name && contact.name[0]) {
+              document.getElementById('staffName').value = contact.name[0];
+            }
+            if (contact.tel && contact.tel[0]) {
+              let clean = contact.tel[0].replace(/\D/g, '');
+              if (clean.length > 10) clean = clean.slice(-10);
+              document.getElementById('staffPhone').value = clean;
+            }
+          }
+        } catch (err) {
+          alert('కాంటాక్ట్ ఎంపిక విఫలమైంది: ' + err.message);
+        }
+      } else {
+        alert('ఈ బ్రౌజర్‌లో కాంటాక్ట్ పికర్ సపోర్ట్ లేదు. వివరాలను నేరుగా టైప్ చేయండి.');
+      }
     }
 
-    // Date Presets Calculation
-    function applyPresetDays(days) {
-      const d = new Date();
-      d.setDate(d.getDate() + parseInt(days));
-      d.setHours(17, 0, 0, 0); // Default 5:00 PM
-      document.getElementById('dueDate').value = formatDateTimeLocal(d);
+    function formatReadableTime(isoStr) {
+      if (!isoStr) return 'N/A';
+      const d = new Date(isoStr);
+      return d.toLocaleDateString('te-IN', { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
 
-    function calculateCustomDate(days) {
-      if (!days || days <= 0) return;
-      applyPresetDays(days);
+    function generateMessageText(item, isReminder = false) {
+      const header = isReminder ? `⚠️ *రిమైండర్ - తహసీల్దార్ వారి కార్యాలయం, పెద్దవడుగూరు*` : `*తహసీల్దార్ వారి కార్యాలయం, పెద్దవడుగూరు*`;
+      return `${header}\n━━━━━━━━━━━━━━━━━━━━\n📌 *ఆదేశాలు / విచారణ నివేదిక కొరకు*\n\n👤 *సిబ్బంది పేరు:* ${item.staffName}\n📂 *అర్జీ రకం :* ${item.appType}\n👤 *అర్జిదారుని పేరు :* ${item.applicantName}\n📄 *రిఫరెన్స్ నంబర్:* ${item.refNo}\n📅 *పరిష్కార గడువు తేదీ:* ${item.dueDate.replace('T', ' ')}\n\n⚠️ *గమనిక:* నిర్ణీత గడువులోగా క్షేత్రస్థాయి విచారణ పూర్తి చేసి నివేదిక సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
     }
 
-    function formatDateTimeLocal(date) {
-      const pad = (n) => String(n).padStart(2, '0');
-      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    function dispatchToWhatsApp(phone, text) {
+      const url = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
     }
 
-    // Minutes Calculation & Friendly String
-    function calculateTimeRemaining(dueDateTimeStr) {
-      const now = new Date();
-      const target = new Date(dueDateTimeStr);
-      const diffMs = target - now;
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve({ name: file.name, type: file.type, data: reader.result });
+        reader.onerror = error => reject(error);
+      });
+    }
 
-      if (isNaN(diffMs)) return { diffMinutes: 0, text: "గడువు లేదు", isOverdue: false };
+    async function getFormData() {
+      const appType = document.getElementById('appType').value;
+      const applicantName = document.getElementById('applicantName').value.trim();
+      const refNo = document.getElementById('refNo').value.trim();
+      const staffName = document.getElementById('staffName').value.trim();
+      const staffPhone = document.getElementById('staffPhone').value.trim();
+      const dueDate = document.getElementById('dueDate').value;
+      const fileInput = document.getElementById('fileUpload');
 
-      const isOverdue = diffMs < 0;
-      const absDiffMinutes = Math.floor(Math.abs(diffMs) / (1000 * 60));
+      if (!applicantName || !refNo || !staffName || !staffPhone || !dueDate) {
+        alert('దయచేసి అన్ని వివరాలను సరిగ్గా నమోదు చేయండి.');
+        return null;
+      }
 
-      const days = Math.floor(absDiffMinutes / (24 * 60));
-      const hours = Math.floor((absDiffMinutes % (24 * 60)) / 60);
-      const minutes = absDiffMinutes % 60;
+      let fileData = null;
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        if (file.size > 950000) {
+          alert("ఫైల్ సైజు 1MB కంటే తక్కువగా ఉండాలి.");
+          return null;
+        }
+        fileData = await fileToBase64(file);
+      }
 
-      let formatted = "";
-      if (days > 0) formatted += `${days} రోజులు `;
-      if (hours > 0 || days > 0) formatted += `${hours} గం `;
-      formatted += `${minutes} నిమిషాలు`;
+      const now = new Date().toISOString();
 
       return {
-        diffMinutes: Math.floor(diffMs / (1000 * 60)),
-        formattedText: isOverdue ? `${formatted} దాటింది` : `${formatted} మిగిలింది`,
-        isOverdue: isOverdue
+        appType,
+        applicantName,
+        refNo,
+        staffName,
+        staffPhone,
+        dueDate,
+        status: 'పెండింగ్',
+        sentAt: now,
+        lastReminderAt: now,
+        fileInfo: fileData,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
     }
 
-    // Render Dashboard Table (Sorted by Urgent Due Date First)
+    document.getElementById('dispatchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const item = await getFormData();
+      if (!item) return;
+
+      try {
+        await db.collection("notices").add(item);
+        dispatchToWhatsApp(item.staffPhone, generateMessageText(item));
+        document.getElementById('dispatchForm').reset();
+        applyPresetDays(3);
+      } catch (err) {
+        console.error("Save Error:", err);
+        alert("క్లౌడ్‌లో సేవ్ చేయడం విఫలమైంది: " + err.message);
+      }
+    });
+
+    async function triggerReminderByIndex(index) {
+      const item = records[index];
+      if (!item || !item.docId) {
+        alert("రికార్డు గుర్తించబడలేదు.");
+        return;
+      }
+
+      const now = new Date().toISOString();
+      try {
+        await db.collection("notices").doc(item.docId).update({
+          lastReminderAt: now
+        });
+        dispatchToWhatsApp(item.staffPhone, generateMessageText(item, true));
+      } catch (err) {
+        alert("రిమైండర్ విఫలమైంది: " + err.message);
+      }
+    }
+
+    async function toggleStatusByIndex(index) {
+      const item = records[index];
+      if (!item || !item.docId) return;
+
+      const nextStatus = item.status === 'పెండింగ్' ? 'నివేదిక అందింది' : 'పెండింగ్';
+      try {
+        await db.collection("notices").doc(item.docId).update({ status: nextStatus });
+      } catch (err) {
+        alert("స్టేటస్ అప్‌డేట్ విఫలమైంది: " + err.message);
+      }
+    }
+
+    async function deleteRecordByIndex(index) {
+      const item = records[index];
+      if (!item || !item.docId) return;
+
+      if (confirm('ఈ రికార్డును శాశ్వతంగా తొలగించాలనుకుంటున్నారా?')) {
+        try {
+          await db.collection("notices").doc(item.docId).delete();
+        } catch (err) {
+          alert("రికార్డు తొలగింపు విఫలమైంది: " + err.message);
+        }
+      }
+    }
+
+    function listenToRealtimeUpdates() {
+      db.collection("notices").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+        records = [];
+        snapshot.forEach((doc) => {
+          records.push({ docId: doc.id, ...doc.data() });
+        });
+        renderTable(records);
+        if (!document.getElementById('tahsildarDashboardSection').classList.contains('hidden')) {
+          renderTahsildarDashboard();
+        }
+      }, (error) => {
+        console.error("Firestore Error: ", error);
+      });
+    }
+
+    function filterRecords() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = records.filter(r => 
+        (r.refNo && r.refNo.toLowerCase().includes(q)) ||
+        (r.applicantName && r.applicantName.toLowerCase().includes(q)) ||
+        (r.staffName && r.staffName.toLowerCase().includes(q)) ||
+        (r.appType && r.appType.toLowerCase().includes(q))
+      );
+      renderTable(filtered);
+    }
+
+    function renderTable(dataToRender) {
+      const tbody = document.getElementById('dispatchTableBody');
+      const stats = document.getElementById('statsCount');
+      tbody.innerHTML = '';
+      stats.innerText = `మొత్తం: ${dataToRender.length}`;
+
+      if (dataToRender.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-slate-400 font-semibold">రికార్డులు ఏవీ లేవు</td></tr>`;
+        return;
+      }
+
+      const now = new Date().getTime();
+
+      dataToRender.forEach((r, idx) => {
+        const isClosed = r.status === 'నివేదిక అందింది';
+        const dueTime = new Date(r.dueDate).getTime();
+        const isOverdue = dueTime < now && !isClosed;
+
+        const reminderHtml = (r.lastReminderAt && r.lastReminderAt !== r.sentAt) 
+          ? `<div class="flex items-center gap-1 text-amber-700 font-semibold mt-1"><i data-lucide="bell" class="w-3 h-3 text-amber-600"></i> రిమైండర్: ${formatReadableTime(r.lastReminderAt)}</div>`
+          : '';
+
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-50/90 transition border-b border-slate-100';
+        row.innerHTML = `
+          <td class="px-5 py-4">
+            <div class="font-extrabold text-slate-900 flex items-center gap-1.5">
+              ${r.refNo}
+              ${r.fileInfo ? `<button onclick="viewFilePreview(\${idx})" class="text-teal-600 hover:text-teal-800" title="ఫైల్ చూడండి"><i data-lucide="file-text" class="w-3.5 h-3.5"></i></button>` : ''}
+            </div>
+            <div class="text-xs text-teal-700 font-semibold">${r.appType}</div>
+          </td>
+          <td class="px-5 py-4 text-slate-800 font-semibold">${r.applicantName}</td>
+          <td class="px-5 py-4">
+            <div class="font-bold text-slate-800">${r.staffName}</div>
+            <div class="text-xs text-slate-500 font-mono">+91 ${r.staffPhone}</div>
+          </td>
+          <td class="px-5 py-4 text-xs font-medium text-slate-600">
+            <div class="flex items-center gap-1 text-slate-700">
+              <i data-lucide="send" class="w-3 h-3 text-teal-600"></i> ${formatReadableTime(r.sentAt)}
+            </div>
+            ${reminderHtml}
+          </td>
+          <td class="px-5 py-4 font-mono text-xs font-bold ${isOverdue ? 'text-rose-600' : 'text-slate-700'}">
+            ${r.dueDate ? r.dueDate.replace('T', ' ') : 'N/A'}
+            ${isOverdue ? '<span class="block text-[10px] text-rose-500 font-semibold">(గడువు ముగిసింది)</span>' : ''}
+          </td>
+          <td class="px-5 py-4">
+            <button onclick="toggleStatusByIndex(${idx})" class="text-xs font-bold px-3 py-1.5 rounded-xl border shadow-sm transition ${isClosed ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'}">
+              ${r.status}
+            </button>
+          </td>
+          <td class="px-5 py-4 text-right">
+            <div class="inline-flex items-center gap-1.5">
+              ${!isClosed ? `
+                <button onclick="triggerReminderByIndex(\${idx})" class="p-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg border border-amber-200 transition" title="రిమైండర్ పంపు">
+                  <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                </button>
+              ` : ''}
+              <button onclick="deleteRecordByIndex(${idx})" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition" title="తొలగించు">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      lucide.createIcons();
+    }
+
     function renderTahsildarDashboard() {
-      const tbody = document.getElementById('tahsildarFilesTableBody');
-      tbody.innerHTML = "";
-
-      let total = records.length;
-      let pending = 0;
-      let overdue = 0;
+      const total = records.length;
       let closed = 0;
+      let overdue = 0;
+      let pending = 0;
+      const now = new Date().getTime();
 
-      // Calculate state for counters
       records.forEach(r => {
-        if (r.status === "పరిష్కరించబడింది") {
+        if (r.status === 'నివేదిక అందింది') {
           closed++;
         } else {
           pending++;
-          const rem = calculateTimeRemaining(r.dueDate);
-          if (rem.isOverdue) overdue++;
+          const due = new Date(r.dueDate).getTime();
+          if (due < now) overdue++;
         }
       });
 
@@ -436,259 +700,74 @@
       document.getElementById('dashOverdue').innerText = overdue;
       document.getElementById('dashClosed').innerText = closed;
 
-      // Sort: Pendings with soonest due date / already overdue come FIRST
-      let displayList = [...records].sort((a, b) => {
-        if (a.status === "పరిష్కరించబడింది" && b.status !== "పరిష్కరించబడింది") return 1;
-        if (a.status !== "పరిష్కరించబడింది" && b.status === "పరిష్కరించబడింది") return -1;
-        return new Date(a.dueDate) - new Date(b.dueDate);
-      });
+      const tbody = document.getElementById('tahsildarFilesTableBody');
+      tbody.innerHTML = '';
 
-      // Search Filter
-      if (filterQuery.trim() !== "") {
-        const q = filterQuery.toLowerCase();
-        displayList = displayList.filter(r => 
-          (r.refNo && r.refNo.toLowerCase().includes(q)) ||
-          (r.applicantName && r.applicantName.toLowerCase().includes(q)) ||
-          (r.staffName && r.staffName.toLowerCase().includes(q)) ||
-          (r.appType && r.appType.toLowerCase().includes(q))
-        );
-      }
-
-      if (displayList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">అర్జీలు ఏవీ లేవు</td></tr>`;
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">అర్జీలు లేవు</td></tr>`;
         return;
       }
 
-      displayList.forEach(item => {
-        const tr = document.createElement('tr');
-        const timeInfo = calculateTimeRemaining(item.dueDate);
-        const isClosed = item.status === "పరిష్కరించబడింది";
+      records.forEach((r, idx) => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
 
-        let badgeClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
-        if (isClosed) {
-          badgeClass = "bg-slate-100 text-slate-600 border-slate-200";
-        } else if (timeInfo.isOverdue) {
-          badgeClass = "bg-rose-100 text-rose-800 border-rose-300 font-bold animate-pulse";
-        } else if (timeInfo.diffMinutes <= 1440) { // less than 24 hours
-          badgeClass = "bg-amber-100 text-amber-900 border-amber-300 font-bold";
-        }
-
-        const previewButton = item.fileData 
-          ? `<button onclick="openPreview('${item.refNo}', '${item.fileType}', '${item.fileData}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold border border-teal-200 shadow-sm transition">
-               <i data-lucide="eye" class="w-3.5 h-3.5"></i> ప్రివ్యూ
+        const filePreviewBtn = r.fileInfo 
+          ? `<button onclick="viewFilePreview(${idx})" class="inline-flex items-center gap-1 bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold px-2.5 py-1 rounded-lg border border-teal-200 text-[11px] transition">
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i> ప్రివ్యూ
              </button>`
-          : `<span class="text-slate-400 text-[11px]">ఫైల్ లేదు</span>`;
+          : `<span class="text-slate-400 font-medium">ఫైల్ లేదు</span>`;
 
-        tr.innerHTML = `
+        row.innerHTML = `
+          <td class="px-4 py-3 font-bold text-slate-900">${r.refNo}</td>
+          <td class="px-4 py-3 text-slate-700 font-semibold">${r.applicantName}</td>
+          <td class="px-4 py-3 text-slate-600">${r.appType}</td>
+          <td class="px-4 py-3 font-semibold text-slate-800">${r.staffName}</td>
+          <td class="px-4 py-3 font-mono text-slate-600">${r.dueDate ? r.dueDate.replace('T', ' ') : 'N/A'}</td>
           <td class="px-4 py-3">
-            <span class="inline-block px-2.5 py-1 rounded-lg text-[11px] border ${badgeClass}">
-              ${isClosed ? 'పూర్తయింది' : (timeInfo.isOverdue ? '⚠️ ' + timeInfo.formattedText : '⏳ ' + timeInfo.formattedText)}
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.status === 'నివేదిక అందింది' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              ${r.status}
             </span>
           </td>
-          <td class="px-4 py-3">
-            <div class="font-bold text-slate-800">${item.refNo}</div>
-            <div class="text-[10px] text-teal-700 font-semibold">${item.appType}</div>
-          </td>
-          <td class="px-4 py-3 font-semibold text-slate-700">${item.applicantName}</td>
-          <td class="px-4 py-3">
-            <div class="font-bold text-slate-800">${item.staffName}</div>
-            <div class="text-[10px] text-slate-500 font-mono">+91 ${item.staffPhone}</div>
-          </td>
-          <td class="px-4 py-3 text-xs text-slate-600 font-mono">${formatReadableDate(item.dueDate)}</td>
-          <td class="px-4 py-3">
-            <select onchange="updateRecordStatus('${item.id}', this.value)" class="text-xs rounded-xl px-2.5 py-1 font-bold border ${isClosed ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-700 border-amber-300'} outline-none">
-              <option value="విచారణలో ఉంది" ${item.status === 'విచారణలో ఉంది' ? 'selected' : ''}>విచారణలో ఉంది</option>
-              <option value="పరిష్కరించబడింది" ${item.status === 'పరిష్కరించబడింది' ? 'selected' : ''}>పరిష్కరించబడింది</option>
-            </select>
-          </td>
-          <td class="px-4 py-3 text-center">${previewButton}</td>
-          <td class="px-4 py-3 text-right">
-            <button onclick="sendWhatsAppReminder('${item.staffPhone}', '${item.staffName}', '${item.refNo}', '${item.appType}', '${item.applicantName}', '${item.dueDate}')" class="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1.5 rounded-xl shadow-sm transition active:scale-95">
-              <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> రిమైండర్
-            </button>
-          </td>
+          <td class="px-4 py-3 text-center">${filePreviewBtn}</td>
         `;
-        tbody.appendChild(tr);
+        tbody.appendChild(row);
       });
+
       lucide.createIcons();
     }
 
-    function filterDashboardRecords() {
-      filterQuery = document.getElementById('dashSearchInput').value;
-      renderTahsildarDashboard();
-    }
-
-    function formatReadableDate(dt) {
-      if (!dt) return "N/A";
-      const d = new Date(dt);
-      return d.toLocaleString('te-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    }
-
-    // Direct WhatsApp Reminder Trigger
-    function sendWhatsAppReminder(phone, staff, ref, type, applicant, dueDate) {
-      if (!phone || phone.length !== 10) {
-        alert("సిబ్బంది ఫోన్ నంబర్ సరిగ్గా లేదు!");
+    function viewFilePreview(index) {
+      const item = records[index];
+      if (!item || !item.fileInfo || !item.fileInfo.data) {
+        alert("ఈ అర్జీకి సంబంధించిన ఫైల్ అందుబాటులో లేదు.");
         return;
       }
 
-      const formattedDue = new Date(dueDate).toLocaleString('te-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-      const timeRemaining = calculateTimeRemaining(dueDate).formattedText;
-
-      const message = `*తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*\n` +
-                      `*అత్యవసర అర్జీ రిమైండర్ నోటీస్*\n\n` +
-                      `గౌరవనీయులైన *${staff}* గారికి,\n` +
-                      `మీకు కేటాయించిన క్రింది అర్జీ విచారణ గడువు సమీపిస్తున్నది/ముగిసినది. వెంటనే పరిశీలించి నివేదిక సమర్పించగలరు.\n\n` +
-                      `📌 *రిఫరెన్స్ నంబర్:* ${ref}\n` +
-                      `📄 *అర్జీ రకం:* ${type}\n` +
-                      `👤 *అర్జిదారు:* ${applicant}\n` +
-                      `⏰ *పరిష్కార గడువు:* ${formattedDue}\n` +
-                      `⏳ *మిగిలిన సమయం:* ${timeRemaining}\n\n` +
-                      `- తహసీల్దార్, పెద్దవడుగూరు మండలం.`;
-
-      const encodedMsg = encodeURIComponent(message);
-      const cleanPhone = "91" + phone.trim();
-      const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMsg}`;
-
-      window.open(whatsappUrl, '_blank');
-    }
-
-    // Status Update Firestore
-    async function updateRecordStatus(docId, newStatus) {
-      try {
-        if (db) {
-          await db.collection("dispatches").doc(docId).update({ status: newStatus });
-        } else {
-          const rec = records.find(r => r.id === docId);
-          if (rec) rec.status = newStatus;
-          renderTahsildarDashboard();
-        }
-      } catch (err) {
-        alert("స్టేటస్ అప్‌డేట్ చేయడంలో లోపం: " + err.message);
-      }
-    }
-
-    // Open File in Modal (PDF / JPG / PNG)
-    function openPreview(ref, fileType, fileData) {
-      const modal = document.getElementById('previewModal');
-      const container = document.getElementById('previewContainer');
-      const title = document.getElementById('previewTitle');
-      const downloadLink = document.getElementById('previewDownloadLink');
-
-      title.innerText = `అర్జీ ఫైల్ ప్రివ్యూ (${ref})`;
-      downloadLink.href = fileData;
-      downloadLink.setAttribute('download', `${ref}.${fileType.includes('pdf') ? 'pdf' : 'jpg'}`);
-
-      if (fileType.includes('pdf')) {
-        container.innerHTML = `<iframe src="${fileData}" class="w-full h-full rounded-2xl border border-slate-300" frameborder="0"></iframe>`;
+      const win = window.open();
+      if (item.fileInfo.type.includes('pdf')) {
+        win.document.write(`<title>${item.fileInfo.name}</title><iframe src="${item.fileInfo.data}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
       } else {
-        container.innerHTML = `<img src="${fileData}" alt="Uploaded Document" class="max-h-full max-w-full object-contain rounded-xl shadow-md"/>`;
-      }
-
-      modal.classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function closePreviewModal() {
-      document.getElementById('previewModal').classList.add('hidden');
-      document.getElementById('previewContainer').innerHTML = "";
-    }
-
-    // Form Submission with File Base64 Convert
-    async function handleFormSubmit(e) {
-      e.preventDefault();
-
-      const refNo = document.getElementById('refNo').value.trim();
-      const applicantName = document.getElementById('applicantName').value.trim();
-      const appType = document.getElementById('appType').value;
-      const staffName = document.getElementById('staffName').value.trim();
-      const staffPhone = document.getElementById('staffPhone').value.trim();
-      const dueDate = document.getElementById('dueDate').value;
-      const fileInput = document.getElementById('fileUpload');
-
-      let fileData = "";
-      let fileType = "";
-
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        fileType = file.type;
-        try {
-          fileData = await readFileAsBase64(file);
-        } catch (err) {
-          console.error("ఫైల్ రీడ్ చేయడంలో లోపం:", err);
-        }
-      }
-
-      const newEntry = {
-        refNo,
-        applicantName,
-        appType,
-        staffName,
-        staffPhone,
-        dueDate,
-        fileData,
-        fileType,
-        status: "విచారణలో ఉంది",
-        createdAt: new Date().toISOString()
-      };
-
-      try {
-        if (db) {
-          await db.collection("dispatches").add(newEntry);
-        } else {
-          newEntry.id = "local-" + Date.now();
-          records.unshift(newEntry);
-          if (isDashboardUnlocked) renderTahsildarDashboard();
-        }
-
-        // WhatsApp సందేశం పంపుటకు సిద్ధం చేయడం
-        sendWhatsAppReminder(staffPhone, staffName, refNo, appType, applicantName, dueDate);
-        
-        alert("అర్జీ వివరాలు విజయవంతంగా భద్రపరచబడ్డాయి మరియు WhatsApp నోటీస్ రూపొందించబడింది!");
-        document.getElementById('dispatchForm').reset();
-        applyPresetDays(3);
-      } catch (err) {
-        alert("సేవ్ చేయడంలో లోపం: " + err.message);
+        win.document.write(`<title>${item.fileInfo.name}</title><body style="margin:0; background:#0f172a; display:flex; align-items:center; justify-center:center; height:100vh;"><img src="${item.fileInfo.data}" style="max-width:90%; max-height:90%; margin:auto; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.5);" /></body>`);
       }
     }
 
-    function readFileAsBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // CSV Report Export
     function exportToCSV() {
       if (records.length === 0) {
-        alert("డౌన్‌లోడ్ చేయడానికి రికార్డులు ఏవీ లేవు!");
+        alert('ఎగుమతి చేయడానికి ఎటువంటి రికార్డులు లేవు.');
         return;
       }
-
-      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-      csvContent += "రిఫరెన్స్ నంబర్,అర్జీ రకం,అర్జిదారుని పేరు,సిబ్బంది పేరు,ఫోన్ నంబర్,గడువు తేదీ,మిగిలిన సమయం,స్థితి\n";
+      let csvContent = "\uFEFF";
+      csvContent += "రిఫరెన్స్ నంబర్,అర్జీ రకం,అర్జిదారుని పేరు,సిబ్బంది పేరు,ఫోన్ నంబర్,పంపిన సమయం,చివరి రిమైండర్,గడువు తేదీ,స్టేటస్\n";
 
       records.forEach(r => {
-        const rem = calculateTimeRemaining(r.dueDate);
-        const row = [
-          `"${r.refNo || ''}"`,
-          `"${r.appType || ''}"`,
-          `"${r.applicantName || ''}"`,
-          `"${r.staffName || ''}"`,
-          `"${r.staffPhone || ''}"`,
-          `"${r.dueDate || ''}"`,
-          `"${rem.formattedText || ''}"`,
-          `"${r.status || ''}"`
-        ].join(",");
-        csvContent += row + "\r\n";
+        csvContent += `"${r.refNo}","${r.appType}","${r.applicantName}","${r.staffName}","${r.staffPhone}","${r.sentAt || ''}","${r.lastReminderAt || ''}","${r.dueDate}","${r.status}"\n`;
       });
 
-      const encodedUri = encodeURI(csvContent);
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `Live_Minutes_Tracker_${new Date().toISOString().slice(0, 10)}.csv`);
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `Peddavadugur_Tracker_${new Date().toISOString().slice(0,10)}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
