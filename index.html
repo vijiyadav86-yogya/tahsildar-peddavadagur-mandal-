@@ -6,6 +6,11 @@
   <title>Tahsildar Office - Peddavadugur Mandal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Firebase SDKs (Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -25,9 +30,9 @@
           <p class="text-xs md:text-sm text-teal-100 font-medium tracking-wide">పెద్దవడుగూరు మండలం • రెవెన్యూ & ప్రజా సమస్యల పరిష్కార వేదిక</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-full text-xs font-semibold text-emerald-200 border border-white/10">
+      <div id="connectionStatus" class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-full text-xs font-semibold text-emerald-200 border border-white/10">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        ఆన్‌లైన్ డిస్పాచ్ సిస్టమ్
+        Firebase mropvg క్లౌడ్ లైవ్
       </div>
     </div>
   </header>
@@ -41,7 +46,7 @@
           <i data-lucide="send" class="w-5 h-5 text-teal-600"></i>
           <h2 class="text-base font-semibold text-slate-800">సిబ్బందికి (VRO/RI) ఆదేశాలు / అర్జీ పంపే ఫారమ్</h2>
         </div>
-        <span class="text-xs font-medium text-slate-500">* ఖచ్చితమైన వివరాలు నమోదు చేయండి</span>
+        <span class="text-xs font-medium text-slate-500">* క్లౌడ్ డేటాబేస్‌లో ఆటోమేటిక్‌గా సేవ్ అవుతుంది</span>
       </div>
 
       <form id="dispatchForm" class="p-6 space-y-6" onsubmit="event.preventDefault(); sendNotice();">
@@ -145,7 +150,7 @@
             <i data-lucide="share-2" class="w-4 h-4"></i> ఫైల్‌తో కలిపి షేర్ చేయండి (Web Share)
           </button>
           <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-sm transition">
-            <i data-lucide="message-square" class="w-4 h-4"></i> WhatsApp ద్వారా ఆదేశాలు జారీ చేయండి
+            <i data-lucide="message-square" class="w-4 h-4"></i> WhatsApp & Firebase లో సేవ్ చేయండి
           </button>
         </div>
       </form>
@@ -156,9 +161,22 @@
       <div class="px-6 py-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50/70">
         <div class="flex items-center gap-2">
           <i data-lucide="clipboard-list" class="w-5 h-5 text-teal-600"></i>
-          <h3 class="text-base font-semibold text-slate-800">పంపించిన ఆదేశాలు & విచారణ నివేదికల ట్రాకింగ్ (Pending / Closed)</h3>
+          <h3 class="text-base font-semibold text-slate-800">పంపించిన ఆదేశాలు & విచారణ నివేదికల ట్రాకింగ్</h3>
         </div>
-        <div class="text-xs text-slate-500 font-medium" id="statsCount">మొత్తం: 0 రికార్డులు</div>
+        
+        <!-- Search & Excel Export Controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="relative">
+            <input type="text" id="searchInput" oninput="filterRecords()" placeholder="రిఫరెన్స్ లేదా పేరు శోధించండి..." class="bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-teal-500 w-52">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-2.5 top-2"></i>
+          </div>
+
+          <button onclick="exportToCSV()" class="inline-flex items-center gap-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-xl transition border border-emerald-300">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Excel/CSV డౌన్‌లోడ్
+          </button>
+
+          <div class="text-xs text-slate-500 font-medium" id="statsCount">మొత్తం: 0 రికార్డులు</div>
+        </div>
       </div>
 
       <div class="overflow-x-auto">
@@ -175,7 +193,7 @@
             </tr>
           </thead>
           <tbody id="dispatchTableBody" class="divide-y divide-slate-100">
-            <!-- Dynamically populates via JavaScript -->
+            <!-- Populates dynamically via Firestore snapshot -->
           </tbody>
         </table>
       </div>
@@ -184,8 +202,21 @@
   </main>
 
   <script>
-    // Initialize Local Storage Records
-    let records = JSON.parse(localStorage.getItem('peddavadugur_records') || '[]');
+    // Firebase Config (మీ ప్రాజెక్ట్ వివరాలు)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPaIA-OPJnKH1X2XZKXG3DF4U-J6UY60Y",
+      authDomain: "mropvg-d2e6d.firebaseapp.com",
+      projectId: "mropvg-d2e6d",
+      storageBucket: "mropvg-d2e6d.firebasestorage.app",
+      messagingSenderId: "415955400979",
+      appId: "1:415955400979:web:a6279f6cae5539fa9e17eb"
+    };
+
+    // Firebase Initialize
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let records = [];
 
     // Date Calculation Logic
     function addDaysToDate(days) {
@@ -240,7 +271,55 @@
       return `*తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*\n━━━━━━━━━━━━━━━━━━━━\n📌 *ఆదేశాలు*\n\n👤 *సిబ్బంది పేరు:* ${item.staffName}\n📂 *అర్జీ రకం :* ${item.appType}\n👤 *అర్జిదారుని పేరు :* ${item.applicantName}\n📄 *రిఫరెన్స్ నంబర్:* ${item.refNo}\n📅 *పరిష్కార గడువు తేదీ:* ${item.dueDate}\n\n⚠️ *గమనిక:* నిర్ణీత గడువులోగా క్షేత్రస్థాయి విచారణ పూర్తి చేసి తగిన నివేదికను కార్యాలయంలో సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
     }
 
-    // Web Share API to include file + text
+    function getFormData() {
+      const appType = document.getElementById('appType').value;
+      const applicantName = document.getElementById('applicantName').value.trim();
+      const refNo = document.getElementById('refNo').value.trim();
+      const staffName = document.getElementById('staffName').value.trim();
+      const staffPhone = document.getElementById('staffPhone').value.trim();
+      const dueDate = document.getElementById('dueDate').value;
+
+      if (!applicantName || !refNo || !staffName || !staffPhone || !dueDate) {
+        alert('దయచేసి అన్ని వివరాలను నమోదు చేయండి.');
+        return null;
+      }
+
+      return {
+        appType,
+        applicantName,
+        refNo,
+        staffName,
+        staffPhone,
+        dueDate,
+        status: 'పెండింగ్',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+    }
+
+    // Save Record to Firestore
+    async function saveRecordToCloud(item) {
+      try {
+        await db.collection("notices").add(item);
+        document.getElementById('dispatchForm').reset();
+        applyPresetDays(3);
+      } catch (err) {
+        console.error("Firebase save error:", err);
+        alert("క్లౌడ్‌లో సేవ్ చేయడం విఫలమైంది: " + err.message);
+      }
+    }
+
+    // WhatsApp Action
+    async function sendNotice() {
+      const item = getFormData();
+      if (!item) return;
+
+      await saveRecordToCloud(item);
+      const text = encodeURIComponent(generateMessageText(item));
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=91${item.staffPhone}&text=${text}`;
+      window.open(whatsappUrl, '_blank');
+    }
+
+    // Web Share Action
     async function shareViaNative() {
       const fileInput = document.getElementById('fileUpload');
       const item = getFormData();
@@ -258,7 +337,7 @@
       if (navigator.share) {
         try {
           await navigator.share(shareData);
-          saveRecord(item);
+          await saveRecordToCloud(item);
         } catch (err) {
           console.log('షేరింగ్ రద్దు చేయబడింది');
         }
@@ -267,82 +346,89 @@
       }
     }
 
-    function getFormData() {
-      const appType = document.getElementById('appType').value;
-      const applicantName = document.getElementById('applicantName').value.trim();
-      const refNo = document.getElementById('refNo').value.trim();
-      const staffName = document.getElementById('staffName').value.trim();
-      const staffPhone = document.getElementById('staffPhone').value.trim();
-      const dueDate = document.getElementById('dueDate').value;
-
-      if (!applicantName || !refNo || !staffName || !staffPhone || !dueDate) {
-        alert('దయచేసి అన్ని వివరాలను నమోదు చేయండి.');
-        return null;
+    // Toggle Status in Firestore
+    async function toggleStatus(docId, currentStatus) {
+      const nextStatus = currentStatus === 'పెండింగ్' ? 'నివేదిక అందింది' : 'పెండింగ్';
+      try {
+        await db.collection("notices").doc(docId).update({ status: nextStatus });
+      } catch (err) {
+        alert("స్టేటస్ అప్‌డేట్ విఫలమైంది: " + err.message);
       }
-
-      return {
-        id: Date.now(),
-        appType,
-        applicantName,
-        refNo,
-        staffName,
-        staffPhone,
-        dueDate,
-        status: 'పెండింగ్'
-      };
     }
 
-    function sendNotice() {
-      const item = getFormData();
-      if (!item) return;
-
-      saveRecord(item);
-      const text = encodeURIComponent(generateMessageText(item));
-      const whatsappUrl = `https://api.whatsapp.com/send?phone=91${item.staffPhone}&text=${text}`;
-      window.open(whatsappUrl, '_blank');
-    }
-
-    function saveRecord(item) {
-      records.unshift(item);
-      localStorage.setItem('peddavadugur_records', JSON.stringify(records));
-      renderTable();
-      document.getElementById('dispatchForm').reset();
-      applyPresetDays(3);
-    }
-
-    function toggleStatus(id) {
-      records = records.map(r => {
-        if (r.id === id) {
-          r.status = r.status === 'పెండింగ్' ? 'నివేదిక అందింది' : 'పెండింగ్';
+    // Delete Record from Firestore
+    async function deleteRecord(docId) {
+      if (confirm('ఈ రికార్డును శాశ్వతంగా తొలగించాలనుకుంటున్నారా?')) {
+        try {
+          await db.collection("notices").doc(docId).delete();
+        } catch (err) {
+          alert("రికార్డు తొలగింపు విఫలమైంది: " + err.message);
         }
-        return r;
-      });
-      localStorage.setItem('peddavadugur_records', JSON.stringify(records));
-      renderTable();
-    }
-
-    function deleteRecord(id) {
-      if (confirm('ఈ రికార్డును తొలగించాలనుకుంటున్నారా?')) {
-        records = records.filter(r => r.id !== id);
-        localStorage.setItem('peddavadugur_records', JSON.stringify(records));
-        renderTable();
       }
     }
 
-    function renderTable() {
+    // Realtime Listener
+    function listenToRealtimeUpdates() {
+      db.collection("notices").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+        records = [];
+        snapshot.forEach((doc) => {
+          records.push({ docId: doc.id, ...doc.data() });
+        });
+        renderTable(records);
+      }, (error) => {
+        console.error("Firestore Error: ", error);
+      });
+    }
+
+    // Filter Records by Search
+    function filterRecords() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = records.filter(r => 
+        (r.refNo && r.refNo.toLowerCase().includes(q)) ||
+        (r.applicantName && r.applicantName.toLowerCase().includes(q)) ||
+        (r.staffName && r.staffName.toLowerCase().includes(q)) ||
+        (r.appType && r.appType.toLowerCase().includes(q))
+      );
+      renderTable(filtered);
+    }
+
+    // Export Table Data to CSV/Excel
+    function exportToCSV() {
+      if (records.length === 0) {
+        alert('ఎగుమతి చేయడానికి ఎటువంటి రికార్డులు లేవు.');
+        return;
+      }
+      let csvContent = "\uFEFF"; // UTF-8 BOM for Telugu characters
+      csvContent += "రిఫరెన్స్ నంబర్,అర్జీ రకం,అర్జిదారుని పేరు,సిబ్బంది పేరు,ఫోన్ నంబర్,గడువు తేదీ,స్టేటస్\n";
+
+      records.forEach(r => {
+        csvContent += `"${r.refNo}","${r.appType}","${r.applicantName}","${r.staffName}","${r.staffPhone}","${r.dueDate}","${r.status}"\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `Peddavadugur_Revenue_Notices_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Render Table UI
+    function renderTable(dataToRender) {
       const tbody = document.getElementById('dispatchTableBody');
       const stats = document.getElementById('statsCount');
       tbody.innerHTML = '';
-      stats.innerText = `మొత్తం: ${records.length} రికార్డులు`;
+      stats.innerText = `మొత్తం: ${dataToRender.length} రికార్డులు`;
 
-      if (records.length === 0) {
+      if (dataToRender.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-slate-400">ప్రస్తుతానికి ఎటువంటి రికార్డులు లేవు</td></tr>`;
         return;
       }
 
       const today = new Date().setHours(0, 0, 0, 0);
 
-      records.forEach(r => {
+      dataToRender.forEach(r => {
         const due = new Date(r.dueDate).setHours(0, 0, 0, 0);
         const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
 
@@ -371,12 +457,12 @@
           <td class="px-6 py-4 font-mono font-medium text-slate-700">${r.dueDate}</td>
           <td class="px-6 py-4">${pendingBadge}</td>
           <td class="px-6 py-4">
-            <button onclick="toggleStatus(${r.id})" class="text-xs font-semibold px-3 py-1.5 rounded-lg border transition ${isClosed ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'}">
+            <button onclick="toggleStatus('${r.docId}', '${r.status}')" class="text-xs font-semibold px-3 py-1.5 rounded-lg border transition ${isClosed ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'}">
               ${r.status}
             </button>
           </td>
           <td class="px-6 py-4 text-right">
-            <button onclick="deleteRecord(${r.id})" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition" title="తొలగించు">
+            <button onclick="deleteRecord('${r.docId}')" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition" title="తొలగించు">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
           </td>
@@ -390,7 +476,7 @@
     // Initialize Default States
     window.addEventListener('DOMContentLoaded', () => {
       applyPresetDays(3);
-      renderTable();
+      listenToRealtimeUpdates();
       lucide.createIcons();
     });
   </script>
