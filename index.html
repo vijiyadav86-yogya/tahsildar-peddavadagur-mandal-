@@ -22,61 +22,60 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen pb-16">
 
-  <!-- General Staff Password Modal (PIN: 1234) -->
-  <div id="authOverlay" class="fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-md flex items-center justify-center p-4">
+  <!-- Password Security Modal Overlay (PIN: 1234) -->
+  <div id="authOverlay" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center border border-slate-200">
       <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
         <i data-lucide="shield-check" class="w-8 h-8"></i>
       </div>
-      <h2 class="text-xl font-extrabold text-slate-800 mb-1">తహసీల్దార్ కార్యాలయం</h2>
-      <p class="text-xs text-slate-500 mb-6 font-medium">పెద్దవడుగూరు మండలం • అధీకృత సిబ్బంది లాగిన్</p>
+      <h2 class="text-xl font-extrabold text-slate-800 mb-1">Tahsildar Karyalayam</h2>
+      <p class="text-xs text-slate-500 mb-6 font-medium">Peddavadugur Mandal • Staff Login</p>
       
-      <form onsubmit="event.preventDefault(); verifyPin();" class="space-y-4">
+      <form id="authForm" class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 text-center">సిబ్బంది పిన్ (Staff PIN)</label>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 text-center">Secret PIN / Password</label>
           <input type="password" id="accessPin" placeholder="••••" maxlength="10" required autofocus
             class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3 text-center text-lg tracking-widest font-black outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-          <p id="authError" class="text-xs text-rose-600 font-bold mt-2 hidden text-center">తప్పుడు పాస్‌వర్డ్! సరైన పిన్ నమోదు చేయండి.</p>
+          <p id="authError" class="text-xs text-rose-600 font-bold mt-2 hidden text-center">Thappudu PIN! Marosari prayathninchandi.</p>
         </div>
         <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-sm font-bold py-3 rounded-2xl shadow-lg shadow-emerald-700/20 transition flex items-center justify-center gap-2">
-          <i data-lucide="lock-open" class="w-4 h-4"></i> అన్‌లాక్ చేయండి
+          <i data-lucide="lock-open" class="w-4 h-4"></i> Unlock Cheyandi
         </button>
       </form>
-      <p class="text-[11px] text-slate-400 mt-4">డిఫాల్ట్ పిన్: <span class="font-mono font-bold text-slate-600">1234</span></p>
+      <p class="text-[11px] text-slate-400 mt-4">Default PIN: <span class="font-mono font-bold text-slate-600">1234</span></p>
     </div>
   </div>
 
-  <!-- Tahsildar Executive Dashboard Modal (PIN: 1111) -->
+  <!-- Tahsildar Dashboard PIN Modal (PIN: 1111) -->
   <div id="tahsildarAuthOverlay" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center border border-amber-300">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center border-2 border-amber-400">
       <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
         <i data-lucide="crown" class="w-8 h-8 text-amber-600"></i>
       </div>
-      <h2 class="text-xl font-extrabold text-slate-900 mb-1">తహసీల్దార్ వారి లాగిన్</h2>
-      <p class="text-xs text-slate-500 mb-6 font-medium">ఎగ్జిక్యూటివ్ రిపోర్ట్ & ఫైల్ పర్యవేక్షణ</p>
+      <h2 class="text-xl font-extrabold text-slate-900 mb-1">Tahsildar Vari Login</h2>
+      <p class="text-xs text-slate-500 mb-6 font-medium">Executive Dashboard & File Monitoring</p>
       
-      <form onsubmit="event.preventDefault(); verifyTahsildarPin();" class="space-y-4">
+      <form id="tahsildarAuthForm" class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-2 text-center">తహసీల్దార్ రహస్య పిన్</label>
-          <input type="password" id="tahsildarPinInput" placeholder="••••" maxlength="10" required autofocus
+          <label class="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-2 text-center">Tahsildar PIN</label>
+          <input type="password" id="tahsildarPinInput" placeholder="••••" maxlength="10" required
             class="w-full bg-amber-50/50 border border-amber-300 rounded-2xl px-4 py-3 text-center text-lg tracking-widest font-black outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition">
-          <p id="tahsildarAuthError" class="text-xs text-rose-600 font-bold mt-2 hidden text-center">తప్పుడు పిన్! మళ్ళీ ప్రయత్నించండి.</p>
+          <p id="tahsildarAuthError" class="text-xs text-rose-600 font-bold mt-2 hidden text-center">Thappudu PIN! (1111 ani enter cheyandi)</p>
         </div>
         <div class="flex gap-2">
-          <button type="button" onclick="closeTahsildarModal()" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-3 rounded-2xl transition">రద్దు</button>
+          <button type="button" onclick="closeTahsildarModal()" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-3 rounded-2xl transition">Cancel</button>
           <button type="submit" class="w-1/2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-3 rounded-2xl shadow-md transition flex items-center justify-center gap-1.5">
-            <i data-lucide="key" class="w-4 h-4"></i> లాగిన్
+            <i data-lucide="key" class="w-4 h-4"></i> Login
           </button>
         </div>
       </form>
-      <p class="text-[11px] text-slate-400 mt-4">డాష్‌బోర్డ్ పిన్: <span class="font-mono font-bold text-amber-700">1111</span></p>
+      <p class="text-[11px] text-slate-400 mt-4">Dashboard PIN: <span class="font-mono font-bold text-amber-700">1111</span></p>
     </div>
   </div>
 
-  <!-- Main Application Wrapper -->
+  <!-- Main Content Wrapper -->
   <div id="mainApp" class="hidden">
-    
-    <!-- Top Navigation Header -->
+    <!-- Top Header -->
     <header class="bg-gradient-to-r from-teal-900 via-emerald-800 to-cyan-900 text-white shadow-xl sticky top-0 z-40 border-b border-emerald-500/20">
       <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3">
         <div class="flex items-center space-x-3.5">
@@ -85,26 +84,26 @@
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h1 class="text-xl md:text-2xl font-black tracking-tight drop-shadow-sm">తహసీల్దార్ కార్యాలయం</h1>
+              <h1 class="text-xl md:text-2xl font-black tracking-tight drop-shadow-sm">Tahsildar Karyalayam</h1>
               <span class="bg-amber-400/20 text-amber-300 border border-amber-300/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Live Desk</span>
             </div>
-            <p class="text-xs md:text-sm text-teal-100 font-medium">పెద్దవడుగూరు మండలం • రెవెన్యూ & అర్జీల ప్రత్యక్ష పర్యవేక్షణ వేదిక</p>
+            <p class="text-xs md:text-sm text-teal-100 font-medium">Peddavadugur Mandal • Revenue Tracking Portal</p>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-          <!-- Tahsildar Dashboard Trigger Button -->
-          <button onclick="openTahsildarModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-md border border-amber-300 transition active:scale-95">
+          <!-- Tahsildar Dashboard Button -->
+          <button onclick="openTahsildarModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-md border border-amber-300 transition active:scale-95">
             <i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-950"></i>
-            తహసీల్దార్ డాష్‌బోర్డ్ (1111)
+            Tahsildar Dashboard (1111)
           </button>
 
-          <div id="connectionStatus" class="flex items-center gap-2 bg-emerald-950/60 px-3.5 py-2 rounded-2xl text-xs font-semibold text-emerald-200 border border-emerald-400/30 shadow-sm">
+          <div class="flex items-center gap-2 bg-emerald-950/60 px-3.5 py-2 rounded-2xl text-xs font-semibold text-emerald-200 border border-emerald-400/30 shadow-sm">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-            క్లౌడ్ లైవ్
+            Cloud Live
           </div>
           
-          <button onclick="lockScreen()" class="p-2 bg-white/10 hover:bg-rose-500/20 text-white rounded-2xl transition border border-white/10" title="లాగ్ అవుట్">
+          <button onclick="lockScreen()" class="p-2 bg-white/10 hover:bg-rose-500/20 text-white rounded-2xl transition border border-white/10" title="Logout">
             <i data-lucide="log-out" class="w-4 h-4 text-rose-300"></i>
           </button>
         </div>
@@ -113,75 +112,75 @@
 
     <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
-      <!-- Executive Tahsildar Dashboard View (Visible only when unlocked with 1111) -->
-      <section id="tahsildarDashboardSection" class="hidden bg-gradient-to-b from-amber-50/70 to-white rounded-3xl shadow-xl border-2 border-amber-300 p-6 md:p-8 space-y-6">
+      <!-- Tahsildar Executive Dashboard Panel -->
+      <section id="tahsildarDashboardSection" class="hidden bg-gradient-to-b from-amber-50/80 to-white rounded-3xl shadow-xl border-2 border-amber-300 p-6 md:p-8 space-y-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-amber-200 gap-3">
           <div class="flex items-center gap-3">
             <div class="p-3 bg-amber-500 text-slate-950 rounded-2xl shadow-sm">
               <i data-lucide="crown" class="w-6 h-6"></i>
             </div>
             <div>
-              <h2 class="text-lg md:text-xl font-black text-slate-900">తహసీల్దార్ ప్రత్యేక పర్యవేక్షణ వేదిక</h2>
-              <p class="text-xs text-slate-600 font-semibold">పెద్దవడుగూరు మండల రెవెన్యూ సమీక్ష & పెండింగ్ విశ్లేషణ</p>
+              <h2 class="text-lg md:text-xl font-black text-slate-900">Tahsildar Executive Dashboard</h2>
+              <p class="text-xs text-slate-600 font-semibold">Peddavadugur Mandal Revenue & File Monitoring</p>
             </div>
           </div>
           <button onclick="hideTahsildarDashboard()" class="self-end md:self-auto text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-xl transition flex items-center gap-1">
-            <i data-lucide="x" class="w-3.5 h-3.5"></i> డాష్‌బోర్డ్ మూసివేయి
+            <i data-lucide="x" class="w-3.5 h-3.5"></i> Close Dashboard
           </button>
         </div>
 
-        <!-- Metric Cards -->
+        <!-- Metrics -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
-              <p class="text-[11px] font-bold text-slate-500 uppercase">మొత్తం అర్జీలు</p>
+              <p class="text-[11px] font-bold text-slate-500 uppercase">Motham Arjeelu</p>
               <h4 id="dashTotal" class="text-2xl font-black text-slate-800">0</h4>
             </div>
             <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl"><i data-lucide="layers" class="w-5 h-5"></i></div>
           </div>
           <div class="bg-white p-4 rounded-2xl border border-amber-200 shadow-sm flex items-center justify-between">
             <div>
-              <p class="text-[11px] font-bold text-amber-700 uppercase">పెండింగ్ అర్జీలు</p>
+              <p class="text-[11px] font-bold text-amber-700 uppercase">Pending</p>
               <h4 id="dashPending" class="text-2xl font-black text-amber-600">0</h4>
             </div>
             <div class="p-2.5 bg-amber-50 text-amber-600 rounded-xl"><i data-lucide="clock" class="w-5 h-5"></i></div>
           </div>
           <div class="bg-white p-4 rounded-2xl border border-rose-200 shadow-sm flex items-center justify-between">
             <div>
-              <p class="text-[11px] font-bold text-rose-700 uppercase">గడువు ముగిసినవి</p>
+              <p class="text-[11px] font-bold text-rose-700 uppercase">Gaduvu Mugisinavi</p>
               <h4 id="dashOverdue" class="text-2xl font-black text-rose-600">0</h4>
             </div>
             <div class="p-2.5 bg-rose-50 text-rose-600 rounded-xl"><i data-lucide="alert-triangle" class="w-5 h-5"></i></div>
           </div>
           <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm flex items-center justify-between">
             <div>
-              <p class="text-[11px] font-bold text-emerald-700 uppercase">నివేదిక వచ్చినవి</p>
+              <p class="text-[11px] font-bold text-emerald-700 uppercase">Nivedika Vachinavi</p>
               <h4 id="dashClosed" class="text-2xl font-black text-emerald-600">0</h4>
             </div>
             <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
           </div>
         </div>
 
-        <!-- Files and Staff Breakdown Table -->
+        <!-- Dashboard Files Table -->
         <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <i data-lucide="folder-archive" class="w-4 h-4 text-amber-600"></i> అప్‌లోడ్ చేసిన అర్జీలు & సిబ్బంది కేటాయింపులు
+              <i data-lucide="folder-archive" class="w-4 h-4 text-amber-600"></i> Upload Chesina Files & Staff Assignments
             </h3>
-            <span class="text-xs text-slate-400 font-medium">ఫైల్ నేరుగా చూసేందుకు ప్రివ్యూ క్లిక్ చేయండి</span>
+            <span class="text-xs text-slate-400 font-medium">Preview click chesi file chudandi</span>
           </div>
 
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-600">
               <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px]">
                 <tr>
-                  <th class="px-4 py-2.5">రిఫరెన్స్ నంబర్</th>
-                  <th class="px-4 py-2.5">అర్జిదారుడు</th>
-                  <th class="px-4 py-2.5">అర్జీ రకం</th>
-                  <th class="px-4 py-2.5">కేటాయించిన VRO/RI</th>
-                  <th class="px-4 py-2.5">గడువు తేదీ</th>
-                  <th class="px-4 py-2.5">స్థితి</th>
-                  <th class="px-4 py-2.5 text-center">అప్‌లోడ్ ఫైల్</th>
+                  <th class="px-4 py-2.5">Ref No.</th>
+                  <th class="px-4 py-2.5">Arjidaarudu</th>
+                  <th class="px-4 py-2.5">Arjee Rakam</th>
+                  <th class="px-4 py-2.5">Staff (VRO/RI)</th>
+                  <th class="px-4 py-2.5">Gaduvu Thedi</th>
+                  <th class="px-4 py-2.5">Status</th>
+                  <th class="px-4 py-2.5 text-center">Attached File</th>
                 </tr>
               </thead>
               <tbody id="tahsildarFilesTableBody" class="divide-y divide-slate-100 font-medium">
@@ -192,37 +191,37 @@
         </div>
       </section>
 
-      <!-- Dispatch Form Card -->
+      <!-- Form Card -->
       <div class="glass-card rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
         <div class="border-b border-slate-100 bg-slate-50/80 px-6 py-4 flex items-center justify-between">
           <div class="flex items-center space-x-2.5">
             <div class="p-1.5 bg-teal-100 text-teal-800 rounded-xl">
               <i data-lucide="file-output" class="w-5 h-5"></i>
             </div>
-            <h2 class="text-base font-bold text-slate-800">సిబ్బందికి ఆదేశాల జారీ & విచారణ కేటాయింపు</h2>
+            <h2 class="text-base font-bold text-slate-800">Staff ki Aadeshaala Jaaree & Ketaayimpu</h2>
           </div>
           <span class="text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200 flex items-center gap-1.5">
             <i data-lucide="check-check" class="w-3.5 h-3.5"></i> One-Tap WhatsApp Notice
           </span>
         </div>
 
-        <form id="dispatchForm" class="p-6 md:p-8 space-y-6" onsubmit="event.preventDefault(); sendNotice();">
+        <form id="dispatchForm" class="p-6 md:p-8 space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
             <!-- Revenue Category Dropdown -->
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జీ రకం (Revenue Category)</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Arjee Rakam (Revenue Category)</label>
               <div class="relative">
                 <select id="appType" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition appearance-none font-medium shadow-sm">
                   <option value="ROR">ROR</option>
-                  <option value="PGRS (PGRS / మీసేవ)">PGRS అర్జీ</option>
-                  <option value="మండలం అప్లికేషన్">మండలం అప్లికేషన్</option>
-                  <option value="APSEVA కొరకు">APSEVA కొరకు</option>
-                  <option value="భూ సరిహద్దుల వివాదం (F-Line)">భూ సరిహద్దుల వివాదం (F-Line)</option>
+                  <option value="PGRS (PGRS / MeeSeva)">PGRS Arjee</option>
+                  <option value="Mandalam Application">Mandalam Application</option>
+                  <option value="APSEVA Koraku">APSEVA Koraku</option>
+                  <option value="Bhoo Sarihaddula Vivaadam (F-Line)">Bhoo Sarihaddula Vivaadam (F-Line)</option>
                   <option value="Resurvey (Joint LPM)">Resurvey (Joint LPM)</option>
                   <option value="Elections">Elections</option>
                   <option value="Civil Supplies">Civil Supplies</option>
-                  <option value="ఇతరములు">ఇతరములు</option>
+                  <option value="Itharamulu">Itharamulu</option>
                 </select>
                 <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3.5 top-4 pointer-events-none"></i>
               </div>
@@ -230,18 +229,18 @@
 
             <!-- Applicant Name -->
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జిదారుని పేరు (Applicant Name)</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Arjidaaruni Peru (Applicant Name)</label>
               <div class="relative">
-                <input type="text" id="applicantName" placeholder="ఉదా: జి. విజయ్" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
+                <input type="text" id="applicantName" placeholder="Udaa: G. Vijay" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
                 <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
               </div>
             </div>
 
             <!-- Reference Number -->
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">రిఫరెన్స్ / అర్జీ నంబర్ (Ref No.)</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Reference / Arjee Number</label>
               <div class="relative">
-                <input type="text" id="refNo" placeholder="F-8/2026/నోటీస్-12" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
+                <input type="text" id="refNo" placeholder="F-8/2026/Notice-12" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
                 <i data-lucide="hash" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
               </div>
             </div>
@@ -250,16 +249,16 @@
             <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <div class="flex items-center justify-between mb-2">
-                  <label class="text-xs font-bold text-slate-700 uppercase tracking-wider">సిబ్బంది పేరు (Staff / VRO)</label>
+                  <label class="text-xs font-bold text-slate-700 uppercase tracking-wider">Staff Peru (VRO/RI)</label>
                   <button type="button" onclick="pickPhoneContact()" class="text-xs text-teal-700 hover:text-teal-800 flex items-center gap-1 font-bold">
-                    <i data-lucide="contact-2" class="w-4 h-4 text-teal-600"></i> కాంటాక్ట్ ఎంచుకో
+                    <i data-lucide="contact-2" class="w-4 h-4 text-teal-600"></i> Contact Enchuko
                   </button>
                 </div>
-                <input type="text" id="staffName" placeholder="సిబ్బంది పేరు నమోదు చేయండి" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
+                <input type="text" id="staffName" placeholder="Staff peru type cheyandi" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">WhatsApp ఫోన్ నంబర్</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">WhatsApp Phone Number</label>
                 <div class="relative flex shadow-sm rounded-2xl overflow-hidden">
                   <span class="inline-flex items-center px-4 border border-r-0 border-slate-300 bg-slate-100 text-slate-700 text-sm font-bold">
                     🇮🇳 +91
@@ -271,7 +270,7 @@
 
             <!-- File Upload -->
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జీ కాపీ (PDF / JPG)</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Arjee Copy (PDF / JPG)</label>
               <div class="relative">
                 <input type="file" id="fileUpload" accept="application/pdf,image/jpeg,image/png" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-800 hover:file:bg-teal-100 border border-slate-300 rounded-2xl p-1.5 bg-slate-50/80 shadow-sm cursor-pointer">
               </div>
@@ -280,30 +279,34 @@
             <!-- Deadline Calculation Box -->
             <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 p-5 rounded-2xl border border-teal-200/80">
               <div>
-                <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider mb-2">గడువు రోజులు (1-10 ఎంపిక)</label>
+                <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider mb-2">Gaduvu Rojulu (1-10)</label>
                 <select id="presetDays" onchange="applyPresetDays(this.value)" class="w-full bg-white border border-teal-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-600 outline-none font-semibold">
-                  <option value="1">1 రోజు</option>
-                  <option value="2">2 రోజులు</option>
-                  <option value="3" selected>3 రోజులు</option>
-                  <option value="5">5 రోజులు</option>
-                  <option value="7">7 రోజులు</option>
-                  <option value="10">10 రోజులు</option>
+                  <option value="1">1 Roju</option>
+                  <option value="2">2 Rojulu</option>
+                  <option value="3" selected>3 Rojulu</option>
+                  <option value="5">5 Rojulu</option>
+                  <option value="7">7 Rojulu</option>
+                  <option value="10">10 Rojulu</option>
                 </select>
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider mb-2">కస్టమ్ రోజులు నమోదు</label>
-                <input type="number" id="manualDays" min="1" placeholder="రోజులు నమోదు చేయండి" oninput="calculateCustomDate(this.value)" class="w-full bg-white border border-teal-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-600 outline-none font-semibold">
+                <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider mb-2">Custom Rojulu</label>
+                <input type="number" id="manualDays" min="1" placeholder="Rojulu" oninput="calculateCustomDate(this.value)" class="w-full bg-white border border-teal-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-600 outline-none font-semibold">
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider mb-2">పరిష్కార గడువు తేదీ & సమయం (Due Date)</label>
+                <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider mb-2">Gaduvu Thedi & Samayam</label>
                 <input type="datetime-local" id="dueDate" required class="w-full bg-white border border-teal-300 rounded-xl px-4 py-2.5 text-sm text-teal-900 font-bold outline-none">
               </div>
             </div>
 
           </div>
 
-          <!-- Form Submission Actions -->
+          <!-- Form Actions -->
           <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-slate-100">
-            <button type="submit" class="w-full sm:w-auto i
+            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-sm font-bold px-7 py-3 rounded-2xl shadow-lg shadow-emerald-700/20 active:scale-95 transition">
+              <i data-lucide="send" class="w-4 h-4"></i> WhatsApp lo Aadeshaalu Pampu & Save Cheyi
+            </button>
+          </div>
+  
