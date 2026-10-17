@@ -22,34 +22,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen pb-16">
 
-  <!-- తహసీల్దార్ డాష్‌బోర్డ్ పాస్‌వర్డ్ విండో (PIN: 1111) -->
-  <div id="tahsildarAuthOverlay" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center border-2 border-amber-400">
-      <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-        <i data-lucide="crown" class="w-8 h-8 text-amber-600"></i>
-      </div>
-      <h2 class="text-xl font-extrabold text-slate-900 mb-1">తహసీల్దార్ వారి లాగిన్</h2>
-      <p class="text-xs text-slate-500 mb-6 font-medium">ప్రత్యేక డాష్‌బోర్డ్ & ఫైళ్ల పర్యవేక్షణ</p>
-      
-      <form id="tahsildarAuthForm" class="space-y-4">
-        <div class="text-left">
-          <label class="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-2 text-center">తహసీల్దార్ పిన్</label>
-          <input type="password" id="tahsildarPinInput" placeholder="••••" maxlength="10" required
-            class="w-full bg-amber-50/50 border border-amber-300 rounded-2xl px-4 py-3 text-center text-lg tracking-widest font-black outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition">
-          <p id="tahsildarAuthError" class="text-xs text-rose-600 font-bold mt-2 hidden text-center">తప్పుడు పిన్! (1111 అని నమోదు చేయండి)</p>
-        </div>
-        <div class="flex gap-2">
-          <button type="button" onclick="closeTahsildarModal()" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-3 rounded-2xl transition">రద్దు</button>
-          <button type="submit" class="w-1/2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-3 rounded-2xl shadow-md transition flex items-center justify-center gap-1.5">
-            <i data-lucide="key" class="w-4 h-4"></i> లాగిన్
-          </button>
-        </div>
-      </form>
-      <p class="text-[11px] text-slate-400 mt-4">డాష్‌బోర్డ్ పిన్: <span class="font-mono font-bold text-amber-700">1111</span></p>
-    </div>
-  </div>
-
-  <!-- ప్రధాన హెడర్ -->
+  <!-- Header -->
   <header class="bg-gradient-to-r from-teal-900 via-emerald-800 to-cyan-900 text-white shadow-xl sticky top-0 z-40 border-b border-emerald-500/20">
     <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3">
       <div class="flex items-center space-x-3.5">
@@ -66,9 +39,9 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2.5">
-        <!-- తహసీల్దార్ డాష్‌బోర్డ్ బటన్ -->
-        <button onclick="openTahsildarModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-md border border-amber-300 transition active:scale-95">
-          <i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-950"></i>
+        <!-- Direct Password Trigger Button -->
+        <button id="dashBtn" onclick="askDashboardPassword()" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-md border border-amber-300 transition active:scale-95">
+          <i data-lucide="lock" class="w-4 h-4 text-slate-950"></i>
           తహసీల్దార్ డాష్‌బోర్డ్ (1111)
         </button>
 
@@ -82,7 +55,7 @@
 
   <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
-    <!-- తహసీల్దార్ ప్రత్యేక పర్యవేక్షణ ప్యానెల్ (PIN 1111 తో ఓపెన్ అవుతుంది) -->
+    <!-- Tahsildar Dashboard Section (1111 tho unlock avtundi) -->
     <section id="tahsildarDashboardSection" class="hidden bg-gradient-to-b from-amber-50/80 to-white rounded-3xl shadow-xl border-2 border-amber-300 p-6 md:p-8 space-y-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-amber-200 gap-3">
         <div class="flex items-center gap-3">
@@ -94,12 +67,12 @@
             <p class="text-xs text-slate-600 font-semibold">పెద్దవడుగూరు మండల రెవెన్యూ సమీక్ష & పెండింగ్ విశ్లేషణ</p>
           </div>
         </div>
-        <button onclick="hideTahsildarDashboard()" class="self-end md:self-auto text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+        <button onclick="closeDashboardView()" class="self-end md:self-auto text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-xl transition flex items-center gap-1">
           <i data-lucide="x" class="w-3.5 h-3.5"></i> డాష్‌బోర్డ్ మూసివేయి
         </button>
       </div>
 
-      <!-- కౌంటర్స్ -->
+      <!-- Counters -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
@@ -131,13 +104,13 @@
         </div>
       </div>
 
-      <!-- డాష్‌బోర్డ్ ఫైల్స్ టేబుల్ -->
+      <!-- Dashboard Table -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
             <i data-lucide="folder-archive" class="w-4 h-4 text-amber-600"></i> అప్‌లోడ్ చేసిన అర్జీలు & సిబ్బంది కేటాయింపులు
           </h3>
-          <span class="text-xs text-slate-400 font-medium">ఫైల్ నేరుగా చూసేందుకు ప్రివ్యూ క్లిక్ చేయండి</span>
+          <span class="text-xs text-slate-400 font-medium">ప్రివ్యూ క్లిక్ చేసి ఫైల్ చూడండి</span>
         </div>
 
         <div class="overflow-x-auto">
@@ -154,18 +127,18 @@
               </tr>
             </thead>
             <tbody id="tahsildarFilesTableBody" class="divide-y divide-slate-100 font-medium">
-              <!-- డైనమిక్‌గా లోడ్ అవుతుంది -->
+              <!-- Rendered Dynamically -->
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ఆదేశాలు జారీ చేసే ఫారమ్ -->
+    <!-- Main Dispatch Form -->
     <div class="glass-card rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
       <div class="border-b border-slate-100 bg-slate-50/80 px-6 py-4 flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
-          <div class="p-1.5 bg-teal-100 text-teal-800 rounded-xl">
+          <div class="p-1.5 bg-teal-100 text-teal-800 rounded-lg">
             <i data-lucide="file-output" class="w-5 h-5"></i>
           </div>
           <h2 class="text-base font-bold text-slate-800">సిబ్బందికి ఆదేశాల జారీ & విచారణ కేటాయింపు</h2>
@@ -178,7 +151,7 @@
       <form id="dispatchForm" class="p-6 md:p-8 space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-          <!-- అర్జీ రకం డ్రాప్‌డౌన్ -->
+          <!-- Revenue Category -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జీ రకం (Revenue Category)</label>
             <div class="relative">
@@ -197,7 +170,7 @@
             </div>
           </div>
 
-          <!-- అర్జిదారుని పేరు -->
+          <!-- Applicant Name -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జిదారుని పేరు (Applicant Name)</label>
             <div class="relative">
@@ -206,7 +179,7 @@
             </div>
           </div>
 
-          <!-- రిఫరెన్స్ నంబర్ -->
+          <!-- Reference Number -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">రిఫరెన్స్ / అర్జీ నంబర్</label>
             <div class="relative">
@@ -215,7 +188,7 @@
             </div>
           </div>
 
-          <!-- సిబ్బంది వివరాలు & కాంటాక్ట్ పికర్ -->
+          <!-- Staff Details -->
           <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <div class="flex items-center justify-between mb-2">
@@ -238,7 +211,7 @@
             </div>
           </div>
 
-          <!-- ఫైల్ అప్‌లోడ్ -->
+          <!-- File Upload -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జీ కాపీ (PDF / JPG)</label>
             <div class="relative">
@@ -246,7 +219,7 @@
             </div>
           </div>
 
-          <!-- గడువు లెక్కింపు -->
+          <!-- Deadline Box -->
           <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 p-5 rounded-2xl border border-teal-200/80">
             <div>
               <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider mb-2">గడువు రోజులు (1-10 ఎంపిక)</label>
@@ -273,7 +246,7 @@
 
         </div>
 
-        <!-- సబ్మిట్ బటన్ -->
+        <!-- Submit Button -->
         <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-slate-100">
           <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-sm font-bold px-7 py-3 rounded-2xl shadow-lg shadow-emerald-700/20 active:scale-95 transition">
             <i data-lucide="send" class="w-4 h-4"></i> WhatsApp లో ఆదేశాలు పంపు & సేవ్ చేయి
@@ -282,7 +255,7 @@
       </form>
     </div>
 
-    <!-- పర్యవేక్షణ నివేదిక టేబుల్ (మినిట్స్ కౌంటర్స్ లేకుండా క్లీన్ వ్యూ) -->
+    <!-- Table -->
     <div class="glass-card rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
       <div class="px-6 py-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/80">
         <div class="flex items-center gap-2.5">
@@ -319,4 +292,76 @@
               <th class="px-5 py-3.5">పంపిన / రిమైండర్ సమయం</th>
               <th class="px-5 py-3.5">పరిష్కార గడువు తేదీ</th>
               <th class="px-5 py-3.5">నివేదిక స్థితి</th>
-              
+              <th class="px-5 py-3.5 text-right">చర్యలు</th>
+            </tr>
+          </thead>
+          <tbody id="dispatchTableBody" class="divide-y divide-slate-100 font-medium">
+            <!-- Dynamic Data -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const TAHSILDAR_PIN = "1111";
+    let isDashboardUnlocked = false;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      applyPresetDays(3);
+      initFirebaseAndListen();
+    });
+
+    // Direct Prompt Based Password (No popup freeze)
+    function askDashboardPassword() {
+      if (isDashboardUnlocked) {
+        toggleDashboardView();
+        return;
+      }
+      
+      const pin = prompt("తహసీల్దార్ డాష్‌బోర్డ్ కోసం పిన్ (1111) నమోదు చేయండి:");
+      if (pin === TAHSILDAR_PIN) {
+        isDashboardUnlocked = true;
+        document.getElementById('dashBtn').innerHTML = `<i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-950"></i> డాష్‌బోర్డ్ (ఓపెన్)`;
+        toggleDashboardView();
+        lucide.createIcons();
+      } else if (pin !== null) {
+        alert("తప్పుడు పిన్! సరైన పిన్ 1111 నమోదు చేయండి.");
+      }
+    }
+
+    function toggleDashboardView() {
+      const dash = document.getElementById('tahsildarDashboardSection');
+      if (dash.classList.contains('hidden')) {
+        dash.classList.remove('hidden');
+        renderTahsildarDashboard();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        dash.classList.add('hidden');
+      }
+    }
+
+    function closeDashboardView() {
+      document.getElementById('tahsildarDashboardSection').classList.add('hidden');
+    }
+
+    // Firebase Credentials
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPaIA-OPJnKH1X2XZKXG3DF4U-J6UY60Y",
+      authDomain: "mropvg-d2e6d.firebaseapp.com",
+      projectId: "mropvg-d2e6d",
+      storageBucket: "mropvg-d2e6d.firebasestorage.app",
+      messagingSenderId: "415955400979",
+      appId: "1:415955400979:web:a6279f6cae5539fa9e17eb"
+    };
+
+    let db;
+    let records = [];
+
+    function initFirebaseAndListen() {
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+   
