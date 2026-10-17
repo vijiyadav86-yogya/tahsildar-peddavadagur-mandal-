@@ -357,4 +357,402 @@
       const yyyy = target.getFullYear();
       const mm = String(target.getMonth() + 1).padStart(2, '0');
       const dd = String(target.getDate()).padStart(2, '0');
-      const hh = String(targ
+      const hh = String(target.getHours()).padStart(2, '0');
+      const min = String(target.getMinutes()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+    }
+
+    function applyPresetDays(val) {
+      document.getElementById('manualDays').value = '';
+      document.getElementById('dueDate').value = addDaysToDateTime(val);
+    }
+
+    function calculateCustomDate(val) {
+      if (val && parseInt(val) > 0) {
+        document.getElementById('dueDate').value = addDaysToDateTime(val);
+      } else {
+        applyPresetDays(document.getElementById('presetDays').value);
+      }
+    }
+
+    async function pickPhoneContact() {
+      if ('contacts' in navigator && 'ContactsManager' in window) {
+        try {
+          const props = ['name', 'tel'];
+          const contacts = await navigator.contacts.select(props, { multiple: false });
+          if (contacts.length > 0) {
+            const contact = contacts[0];
+            if (contact.name && contact.name[0]) {
+              document.getElementById('staffName').value = contact.name[0];
+            }
+            if (contact.tel && contact.tel[0]) {
+              let clean = contact.tel[0].replace(/\D/g, '');
+              if (clean.length > 10) clean = clean.slice(-10);
+              document.getElementById('staffPhone').value = clean;
+            }
+          }
+        } catch (err) {
+          alert('కాంటాక్ట్ ఎంపిక విఫలమైంది: ' + err.message);
+        }
+      } else {
+        alert('ఈ బ్రౌజర్‌లో కాంటాక్ట్ పికర్ సపోర్ట్ లేదు. వివరాలను నేరుగా టైప్ చేయండి.');
+      }
+    }
+
+    function formatReadableTime(isoStr) {
+      if (!isoStr) return 'N/A';
+      const d = new Date(isoStr);
+      return d.toLocaleDateString('te-IN', { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+
+    function generateMessageText(item, isReminder = false) {
+      const header = isReminder ? `⚠️ *రిమైండర్ - తహసీల్దార్ వారి కార్యాలయం, పెద్దవడుగూరు*` : `*తహసీల్దార్ వారి కార్యాలయం, పెద్దవడుగూరు*`;
+      return `${header}\n━━━━━━━━━━━━━━━━━━━━\n📌 *ఆదేశాలు / విచారణ నివేదిక కొరకు*\n\n👤 *సిబ్బంది పేరు:* ${item.staffName}\n📂 *అర్జీ రకం :* ${item.appType}\n👤 *అర్జిదారుని పేరు :* ${item.applicantName}\n📄 *రిఫరెన్స్ నంబర్:* ${item.refNo}\n📅 *పరిష్కార గడువు తేదీ:* ${item.dueDate.replace('T', ' ')}\n\n⚠️ *గమనిక:* నిర్ణీత గడువులోగా క్షేత్రస్థాయి విచారణ పూర్తి చేసి నివేదిక సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
+    }
+
+    function dispatchToWhatsApp(phone, text) {
+      const url = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve({ name: file.name, type: file.type, data: reader.result });
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    async function getFormData() {
+      const appType = document.getElementById('appType').value;
+      const applicantName = document.getElementById('applicantName').value.trim();
+      const refNo = document.getElementById('refNo').value.trim();
+      const staffName = document.getElementById('staffName').value.trim();
+      const staffPhone = document.getElementById('staffPhone').value.trim();
+      const dueDate = document.getElementById('dueDate').value;
+      const fileInput = document.getElementById('fileUpload');
+
+      if (!applicantName || !refNo || !staffName || !staffPhone || !dueDate) {
+        alert('దయచేసి అన్ని వివరాలను సరిగ్గా నమోదు చేయండి.');
+        return null;
+      }
+
+      let fileData = null;
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        if (file.size > 950000) {
+          alert("ఫైల్ సైజు 1MB కంటే తక్కువగా ఉండాలి.");
+          return null;
+        }
+        fileData = await fileToBase64(file);
+      }
+
+      const now = new Date().toISOString();
+
+      return {
+        appType,
+        applicantName,
+        refNo,
+        staffName,
+        staffPhone,
+        dueDate,
+        status: 'పెండింగ్',
+        sentAt: now,
+        lastReminderAt: now,
+        fileInfo: fileData,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+    }
+
+    document.getElementById('dispatchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const item = await getFormData();
+      if (!item) return;
+
+      try {
+        await db.collection("notices").add(item);
+        dispatchToWhatsApp(item.staffPhone, generateMessageText(item));
+        document.getElementById('dispatchForm').reset();
+        applyPresetDays(3);
+      } catch (err) {
+        console.error("Save Error:", err);
+        alert("క్లౌడ్‌లో సేవ్ చేయడం విఫలమైంది: " + err.message);
+      }
+    });
+
+    async function triggerReminderByIndex(index) {
+      const item = records[index];
+      if (!item || !item.docId) {
+        alert("రికార్డు గుర్తించబడలేదు.");
+        return;
+      }
+
+      const now = new Date().toISOString();
+      try {
+        await db.collection("notices").doc(item.docId).update({
+          lastReminderAt: now
+        });
+        dispatchToWhatsApp(item.staffPhone, generateMessageText(item, true));
+      } catch (err) {
+        alert("రిమైండర్ విఫలమైంది: " + err.message);
+      }
+    }
+
+    async function toggleStatusByIndex(index) {
+      const item = records[index];
+      if (!item || !item.docId) return;
+
+      const nextStatus = item.status === 'పెండింగ్' ? 'నివేదిక అందింది' : 'పెండింగ్';
+      try {
+        await db.collection("notices").doc(item.docId).update({ status: nextStatus });
+      } catch (err) {
+        alert("స్టేటస్ అప్‌డేట్ విఫలమైంది: " + err.message);
+      }
+    }
+
+    async function deleteRecordByIndex(index) {
+      const item = records[index];
+      if (!item || !item.docId) return;
+
+      if (confirm('ఈ రికార్డును శాశ్వతంగా తొలగించాలనుకుంటున్నారా?')) {
+        try {
+          await db.collection("notices").doc(item.docId).delete();
+        } catch (err) {
+          alert("రికార్డు తొలగింపు విఫలమైంది: " + err.message);
+        }
+      }
+    }
+
+    function listenToRealtimeUpdates() {
+      db.collection("notices").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+        records = [];
+        snapshot.forEach((doc) => {
+          records.push({ docId: doc.id, ...doc.data() });
+        });
+        renderTable(records);
+        if (!document.getElementById('tahsildarDashboardSection').classList.contains('hidden')) {
+          renderTahsildarDashboard();
+        }
+      }, (error) => {
+        console.error("Firestore Error: ", error);
+      });
+    }
+
+    function filterRecords() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = records.filter(r => 
+        (r.refNo && r.refNo.toLowerCase().includes(q)) ||
+        (r.applicantName && r.applicantName.toLowerCase().includes(q)) ||
+        (r.staffName && r.staffName.toLowerCase().includes(q)) ||
+        (r.appType && r.appType.toLowerCase().includes(q))
+      );
+      renderTable(filtered);
+    }
+
+    function calculatePreciseRemaining(dueDateTimeStr) {
+      const now = new Date().getTime();
+      const due = new Date(dueDateTimeStr).getTime();
+      const diff = due - now;
+
+      if (isNaN(diff)) return { text: 'N/A', isExpired: false };
+
+      if (diff <= 0) {
+        const absDiff = Math.abs(diff);
+        const days = Math.floor(absDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((absDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((absDiff % (1000 * 60 * 60)) / (1000 * 60));
+        return { text: `గడువు ముగిసింది (${days}d ${hours}h ${mins}m)`, isExpired: true };
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      return { text: `${days} రోజుల ${hours} గం. ${mins} నిమి.`, isExpired: false };
+    }
+
+    function renderTable(dataToRender) {
+      const tbody = document.getElementById('dispatchTableBody');
+      const stats = document.getElementById('statsCount');
+      tbody.innerHTML = '';
+      stats.innerText = `మొత్తం: ${dataToRender.length}`;
+
+      if (dataToRender.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-10 text-center text-slate-400 font-semibold">రికార్డులు ఏవీ లేవు</td></tr>`;
+        return;
+      }
+
+      dataToRender.forEach((r, idx) => {
+        const countdown = calculatePreciseRemaining(r.dueDate);
+        const isClosed = r.status === 'నివేదిక అందింది';
+
+        let badge = '';
+        if (isClosed) {
+          badge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> పూర్తయింది</span>`;
+        } else if (countdown.isExpired) {
+          badge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 animate-pulse"><i data-lucide="alert-octagon" class="w-3.5 h-3.5"></i> ${countdown.text}</span>`;
+        } else {
+          badge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300"><i data-lucide="timer" class="w-3.5 h-3.5 text-amber-600"></i> ${countdown.text}</span>`;
+        }
+
+        const reminderHtml = (r.lastReminderAt && r.lastReminderAt !== r.sentAt) 
+          ? `<div class="flex items-center gap-1 text-amber-700 font-semibold mt-1"><i data-lucide="bell" class="w-3 h-3 text-amber-600"></i> రిమైండర్: ${formatReadableTime(r.lastReminderAt)}</div>`
+          : '';
+
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-50/90 transition border-b border-slate-100';
+        row.innerHTML = `
+          <td class="px-5 py-4">
+            <div class="font-extrabold text-slate-900 flex items-center gap-1.5">
+              ${r.refNo}
+              ${r.fileInfo ? `<button onclick="viewFilePreview(${idx})" class="text-teal-600 hover:text-teal-800" title="ఫైల్ చూడండి"><i data-lucide="file-text" class="w-3.5 h-3.5"></i></button>` : ''}
+            </div>
+            <div class="text-xs text-teal-700 font-semibold">${r.appType}</div>
+          </td>
+          <td class="px-5 py-4 text-slate-800 font-semibold">${r.applicantName}</td>
+          <td class="px-5 py-4">
+            <div class="font-bold text-slate-800">${r.staffName}</div>
+            <div class="text-xs text-slate-500 font-mono">+91 ${r.staffPhone}</div>
+          </td>
+          <td class="px-5 py-4 text-xs font-medium text-slate-600">
+            <div class="flex items-center gap-1 text-slate-700">
+              <i data-lucide="send" class="w-3 h-3 text-teal-600"></i> ${formatReadableTime(r.sentAt)}
+            </div>
+            ${reminderHtml}
+          </td>
+          <td class="px-5 py-4 font-mono text-xs font-bold text-slate-700">
+            ${r.dueDate ? r.dueDate.replace('T', ' ') : 'N/A'}
+          </td>
+          <td class="px-5 py-4">${badge}</td>
+          <td class="px-5 py-4">
+            <button onclick="toggleStatusByIndex(${idx})" class="text-xs font-bold px-3 py-1.5 rounded-xl border shadow-sm transition ${isClosed ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'}">
+              ${r.status}
+            </button>
+          </td>
+          <td class="px-5 py-4 text-right">
+            <div class="inline-flex items-center gap-1.5">
+              ${!isClosed ? `
+                <button onclick="triggerReminderByIndex(${idx})" class="p-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg border border-amber-200 transition" title="రిమైండర్ పంపు">
+                  <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                </button>
+              ` : ''}
+              <button onclick="deleteRecordByIndex(${idx})" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition" title="తొలగించు">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      lucide.createIcons();
+    }
+
+    function renderTahsildarDashboard() {
+      const total = records.length;
+      let closed = 0;
+      let overdue = 0;
+      let pending = 0;
+      const now = new Date().getTime();
+
+      records.forEach(r => {
+        if (r.status === 'నివేదిక అందింది') {
+          closed++;
+        } else {
+          pending++;
+          const due = new Date(r.dueDate).getTime();
+          if (due < now) overdue++;
+        }
+      });
+
+      document.getElementById('dashTotal').innerText = total;
+      document.getElementById('dashPending').innerText = pending;
+      document.getElementById('dashOverdue').innerText = overdue;
+      document.getElementById('dashClosed').innerText = closed;
+
+      const tbody = document.getElementById('tahsildarFilesTableBody');
+      tbody.innerHTML = '';
+
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">అర్జీలు లేవు</td></tr>`;
+        return;
+      }
+
+      records.forEach((r, idx) => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+        const filePreviewBtn = r.fileInfo 
+          ? `<button onclick="viewFilePreview(${idx})" class="inline-flex items-center gap-1 bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold px-2.5 py-1 rounded-lg border border-teal-200 text-[11px] transition">
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i> ప్రివ్యూ
+             </button>`
+          : `<span class="text-slate-400 font-medium">ఫైల్ లేదు</span>`;
+
+        row.innerHTML = `
+          <td class="px-4 py-3 font-bold text-slate-900">${r.refNo}</td>
+          <td class="px-4 py-3 text-slate-700 font-semibold">${r.applicantName}</td>
+          <td class="px-4 py-3 text-slate-600">${r.appType}</td>
+          <td class="px-4 py-4 font-semibold text-slate-800">${r.staffName}</td>
+          <td class="px-4 py-3 font-mono text-slate-600">${r.dueDate ? r.dueDate.replace('T', ' ') : 'N/A'}</td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.status === 'నివేదిక అందింది' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              ${r.status}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-center">${filePreviewBtn}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      lucide.createIcons();
+    }
+
+    function viewFilePreview(index) {
+      const item = records[index];
+      if (!item || !item.fileInfo || !item.fileInfo.data) {
+        alert("ఈ అర్జీకి సంబంధించిన ఫైల్ అందుబాటులో లేదు.");
+        return;
+      }
+
+      const win = window.open();
+      if (item.fileInfo.type.includes('pdf')) {
+        win.document.write(`<title>${item.fileInfo.name}</title><iframe src="${item.fileInfo.data}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+      } else {
+        win.document.write(`<title>${item.fileInfo.name}</title><body style="margin:0; background:#0f172a; display:flex; align-items:center; justify-center:center; height:100vh;"><img src="${item.fileInfo.data}" style="max-width:90%; max-height:90%; margin:auto; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.5);" /></body>`);
+      }
+    }
+
+    function exportToCSV() {
+      if (records.length === 0) {
+        alert('ఎగుమతి చేయడానికి ఎటువంటి రికార్డులు లేవు.');
+        return;
+      }
+      let csvContent = "\uFEFF";
+      csvContent += "రిఫరెన్స్ నంబర్,అర్జీ రకం,అర్జిదారుని పేరు,సిబ్బంది పేరు,ఫోన్ నంబర్,పంపిన సమయం,చివరి రిమైండర్,గడువు తేదీ,స్టేటస్\n";
+
+      records.forEach(r => {
+        csvContent += `"${r.refNo}","${r.appType}","${r.applicantName}","${r.staffName}","${r.staffPhone}","${r.sentAt || ''}","${r.lastReminderAt || ''}","${r.dueDate}","${r.status}"\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `Peddavadugur_Tracker_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ప్రతి నిమిషం కౌంట్‌డౌన్ రిఫ్రెష్
+    setInterval(() => {
+      if (records.length > 0) {
+        renderTable(records);
+        if (!document.getElementById('tahsildarDashboardSection').classList.contains('hidden')) {
+          renderTahsildarDashboard();
+        }
+      }
+    }, 60000);
+  </script>
+</body>
+</html>
