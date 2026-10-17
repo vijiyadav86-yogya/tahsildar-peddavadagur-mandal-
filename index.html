@@ -22,7 +22,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
 
-  <!-- Password Security Modal Overlay -->
+  <!-- Staff App Password Security Modal Overlay (PIN: 1234) -->
   <div id="authOverlay" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center border border-slate-200">
       <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
@@ -46,6 +46,30 @@
     </div>
   </div>
 
+  <!-- Tahsildar Dashboard Secret Modal (PIN: 1111) -->
+  <div id="tahsildarAuthModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center border border-amber-200">
+      <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+        <i data-lucide="award" class="w-8 h-8"></i>
+      </div>
+      <h2 class="text-xl font-extrabold text-slate-800 mb-1">తహసీల్దార్ వారి డ్యాష్‌బోర్డ్</h2>
+      <p class="text-xs text-slate-500 mb-6 font-medium">ప్రత్యేక పర్యవేక్షణ వేదిక లాగిన్</p>
+      
+      <form onsubmit="event.preventDefault(); verifyTahsildarPin();" class="space-y-4">
+        <div class="text-left">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 text-center">అధికారిక పాస్‌వర్డ్</label>
+          <input type="password" id="tahPin" placeholder="••••" maxlength="10" required autofocus
+            class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3 text-center text-lg tracking-widest font-black outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition">
+          <p id="tahAuthError" class="text-xs text-rose-600 font-bold mt-2 hidden text-center">తప్పుడు పాస్‌వర్డ్! సరైన పాస్‌వర్డ్ (1111) నమోదు చేయండి.</p>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeTahsildarAuthModal()" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-bold py-3 rounded-2xl transition">రద్దు</button>
+          <button type="submit" class="w-1/2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold py-3 rounded-2xl shadow-lg transition">లాగిన్</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Main Application Wrapper -->
   <div id="mainApp" class="hidden">
     <!-- Top Navigation Header -->
@@ -63,7 +87,11 @@
             <p class="text-xs md:text-sm text-teal-100 font-medium">పెద్దవడుగూరు మండలం • రెవెన్యూ & అర్జీల ప్రత్యక్ష పర్యవేక్షణ వేదిక</p>
           </div>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Tahsildar Dashboard Trigger Button -->
+          <button onclick="openTahsildarDashboard()" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-extrabold text-xs px-4 py-2 rounded-xl shadow-md border border-amber-300/40 transition active:scale-95">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> తహసీల్దార్ డ్యాష్‌బోర్డ్
+          </button>
           <div id="connectionStatus" class="flex items-center gap-2 bg-emerald-950/60 px-4 py-2 rounded-full text-xs font-semibold text-emerald-200 border border-emerald-400/30 shadow-sm">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
             క్లౌడ్ లైవ్ సింక్ యాక్టివ్
@@ -76,6 +104,77 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+      <!-- Tahsildar Exclusive Dashboard Section (Shows upon PIN 1111 verification) -->
+      <section id="tahsildarDashboardView" class="hidden glass-card rounded-3xl p-6 md:p-8 shadow-xl border-2 border-amber-300/80 space-y-6 bg-gradient-to-br from-amber-50/50 via-white to-orange-50/30">
+        <div class="flex items-center justify-between border-b border-amber-200/80 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-amber-500 text-white rounded-2xl shadow-md">
+              <i data-lucide="shield-alert" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-black text-slate-900 tracking-tight">తహసీల్దార్ ప్రత్యేక పర్యవేక్షణ విభాగం</h2>
+              <p class="text-xs text-amber-900 font-semibold">పెద్దవడుగూరు మండలం • సమగ్ర రెవెన్యూ అర్జీల పరిష్కార నివేదిక</p>
+            </div>
+          </div>
+          <button onclick="closeTahsildarView()" class="text-xs font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 px-3.5 py-2 rounded-xl transition border border-amber-300">
+            డ్యాష్‌బోర్డ్ మూసివేయి
+          </button>
+        </div>
+
+        <!-- 4 Metric Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="p-3 bg-blue-100 text-blue-700 rounded-xl"><i data-lucide="files" class="w-6 h-6"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-500 uppercase">మొత్తం అర్జీలు</div>
+              <div class="text-2xl font-black text-slate-800" id="dashTotalCount">0</div>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="p-3 bg-amber-100 text-amber-700 rounded-xl"><i data-lucide="clock" class="w-6 h-6"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-500 uppercase">పెండింగ్ అర్జీలు</div>
+              <div class="text-2xl font-black text-amber-600" id="dashPendingCount">0</div>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl"><i data-lucide="check-check" class="w-6 h-6"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-500 uppercase">పరిష్కరించినవి</div>
+              <div class="text-2xl font-black text-emerald-600" id="dashClosedCount">0</div>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="p-3 bg-rose-100 text-rose-700 rounded-xl"><i data-lucide="alert-octagon" class="w-6 h-6"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-500 uppercase">గడువు ముగిసినవి</div>
+              <div class="text-2xl font-black text-rose-600" id="dashExpiredCount">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Staff-wise Pending Summary Table -->
+        <div class="bg-white rounded-2xl border border-amber-200 overflow-hidden shadow-sm">
+          <div class="px-5 py-3.5 bg-amber-100/50 border-b border-amber-200 font-bold text-xs uppercase tracking-wider text-amber-950 flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4"></i> సిబ్బంది వారీగా పెండింగ్ అర్జీల నివేదిక
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">
+                <tr>
+                  <th class="px-5 py-3">సిబ్బంది పేరు (VRO/RI)</th>
+                  <th class="px-5 py-3">ఫోన్ నంబర్</th>
+                  <th class="px-5 py-3 text-center">పెండింగ్ అర్జీలు</th>
+                  <th class="px-5 py-3 text-center">గడువు ముగిసినవి</th>
+                  <th class="px-5 py-3 text-center">పరిష్కరించినవి</th>
+                </tr>
+              </thead>
+              <tbody id="staffSummaryBody" class="divide-y divide-slate-100 font-medium"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
       <!-- Dispatch Form Card -->
       <div class="glass-card rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
@@ -115,7 +214,7 @@
             <div>
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జిదారుని పేరు (Applicant Name)</label>
               <div class="relative">
-                <input type="text" id="applicantName" placeholder="ఉదా:      " required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
+                <input type="text" id="applicantName" placeholder="ఉదా: జి. విజయ్" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
                 <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
               </div>
             </div>
@@ -250,6 +349,7 @@
 
   <script>
     const SYSTEM_PIN = "1234";
+    const TAHSILDAR_PIN = "1111";
 
     function checkAuth() {
       if (sessionStorage.getItem('tah_auth') === 'true') {
@@ -281,10 +381,111 @@
 
     function lockScreen() {
       sessionStorage.removeItem('tah_auth');
+      sessionStorage.removeItem('tahsildar_view_auth');
       location.reload();
     }
 
-    // Firebase Config (మీ mropvg ప్రాజెక్ట్)
+    // Tahsildar Dashboard Verification Handlers
+    function openTahsildarDashboard() {
+      if (sessionStorage.getItem('tahsildar_view_auth') === 'true') {
+        renderTahsildarDashboard();
+        document.getElementById('tahsildarDashboardView').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        document.getElementById('tahsildarAuthModal').classList.remove('hidden');
+        document.getElementById('tahPin').value = '';
+        document.getElementById('tahAuthError').classList.add('hidden');
+        document.getElementById('tahPin').focus();
+        lucide.createIcons();
+      }
+    }
+
+    function closeTahsildarAuthModal() {
+      document.getElementById('tahsildarAuthModal').classList.add('hidden');
+    }
+
+    function verifyTahsildarPin() {
+      const pin = document.getElementById('tahPin').value;
+      const errorMsg = document.getElementById('tahAuthError');
+      if (pin === TAHSILDAR_PIN) {
+        sessionStorage.setItem('tahsildar_view_auth', 'true');
+        closeTahsildarAuthModal();
+        renderTahsildarDashboard();
+        document.getElementById('tahsildarDashboardView').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        lucide.createIcons();
+      } else {
+        errorMsg.classList.remove('hidden');
+        document.getElementById('tahPin').value = '';
+      }
+    }
+
+    function closeTahsildarView() {
+      document.getElementById('tahsildarDashboardView').classList.add('hidden');
+    }
+
+    function renderTahsildarDashboard() {
+      const total = records.length;
+      let pending = 0;
+      let closed = 0;
+      let expired = 0;
+      const staffMap = {};
+
+      const now = new Date().getTime();
+
+      records.forEach(r => {
+        const isClosed = r.status === 'నివేదిక అందింది';
+        const dueTime = new Date(r.dueDate).getTime();
+        const isExp = !isClosed && (dueTime - now < 0);
+
+        if (isClosed) {
+          closed++;
+        } else {
+          pending++;
+          if (isExp) expired++;
+        }
+
+        const sName = r.staffName || 'Unknown';
+        if (!staffMap[sName]) {
+          staffMap[sName] = { phone: r.staffPhone || 'N/A', pending: 0, closed: 0, expired: 0 };
+        }
+        if (isClosed) {
+          staffMap[sName].closed++;
+        } else {
+          staffMap[sName].pending++;
+          if (isExp) staffMap[sName].expired++;
+        }
+      });
+
+      document.getElementById('dashTotalCount').innerText = total;
+      document.getElementById('dashPendingCount').innerText = pending;
+      document.getElementById('dashClosedCount').innerText = closed;
+      document.getElementById('dashExpiredCount').innerText = expired;
+
+      const sBody = document.getElementById('staffSummaryBody');
+      sBody.innerHTML = '';
+
+      const staffKeys = Object.keys(staffMap);
+      if (staffKeys.length === 0) {
+        sBody.innerHTML = `<tr><td colspan="5" class="px-5 py-4 text-center text-slate-400">సిబ్బంది రికార్డులు ఏవీ లేవు</td></tr>`;
+      } else {
+        staffKeys.forEach(s => {
+          const item = staffMap[s];
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+          row.innerHTML = `
+            <td class="px-5 py-3.5 font-bold text-slate-800">${s}</td>
+            <td class="px-5 py-3.5 font-mono text-xs text-slate-500">+91 ${item.phone}</td>
+            <td class="px-5 py-3.5 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${item.pending}</span></td>
+            <td class="px-5 py-3.5 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">${item.expired}</span></td>
+            <td class="px-5 py-3.5 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">${item.closed}</span></td>
+          `;
+          sBody.appendChild(row);
+        });
+      }
+    }
+
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAPaIA-OPJnKH1X2XZKXG3DF4U-J6UY60Y",
       authDomain: "mropvg-d2e6d.firebaseapp.com",
@@ -355,11 +556,10 @@
     }
 
     function generateMessageText(item, isReminder = false) {
-      const header = isReminder ? `⚠️ *రిమైండర్ - తహసీల్దార్ వారి  కార్యాలయం, పెద్దవడుగూరు*` : `*తహసీల్దార్ వారి కార్యాలయం, పెద్దవడుగూరు*`;
+      const header = isReminder ? `⚠️ *రిమైండర్ - తహసీల్దార్ వారి కార్యాలయం, పెద్దవడుగూరు*` : `*తహసీల్దార్ వారి కార్యాలయం, పెద్దవడుగూరు*`;
       return `${header}\n━━━━━━━━━━━━━━━━━━━━\n📌 *ఆదేశాలు / విచారణ నివేదిక కొరకు*\n\n👤 *సిబ్బంది పేరు:* ${item.staffName}\n📂 *అర్జీ రకం :* ${item.appType}\n👤 *అర్జిదారుని పేరు :* ${item.applicantName}\n📄 *రిఫరెన్స్ నంబర్:* ${item.refNo}\n📅 *పరిష్కార గడువు తేదీ:* ${item.dueDate.replace('T', ' ')}\n\n⚠️ *గమనిక:* నిర్ణీత గడువులోగా క్షేత్రస్థాయి విచారణ పూర్తి చేసి నివేదిక సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
     }
 
-    // Direct WhatsApp Dispatch (No setup needed for staff)
     function dispatchToWhatsApp(phone, text) {
       const url = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(text)}`;
       window.open(url, '_blank');
@@ -460,6 +660,9 @@
         });
         if (sessionStorage.getItem('tah_auth') === 'true') {
           renderTable(records);
+          if (!document.getElementById('tahsildarDashboardView').classList.contains('hidden')) {
+            renderTahsildarDashboard();
+          }
         }
       }, (error) => {
         console.error("Firestore Error: ", error);
@@ -556,11 +759,11 @@
           <td class="px-5 py-4 text-right">
             <div class="inline-flex items-center gap-1.5">
               ${!isClosed ? `
-                <button onclick="triggerReminderByIndex(\${idx})" class="p-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg border border-amber-200 transition" title="రిమైండర్ పంపు">
+                <button onclick="triggerReminderByIndex(\${idx})" class="p-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl border border-amber-200 transition shadow-sm active:scale-95" title="రిమైండర్ పంపు">
                   <i data-lucide="bell-ring" class="w-4 h-4"></i>
                 </button>
               ` : ''}
-              <button onclick="deleteRecordByIndex(${idx})" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition" title="తొలగించు">
+              <button onclick="deleteRecordByIndex(${idx})" class="text-slate-400 hover:text-rose-600 p-2 rounded-xl transition hover:bg-rose-50" title="తొలగించు">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
             </div>
@@ -593,7 +796,7 @@
       document.body.removeChild(link);
     }
 
-    // Auto update live timer every minute
+    // Auto update countdown timers every minute
     setInterval(() => {
       if (records.length > 0 && sessionStorage.getItem('tah_auth') === 'true') {
         renderTable(records);
