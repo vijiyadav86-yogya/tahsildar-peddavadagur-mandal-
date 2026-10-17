@@ -22,7 +22,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
 
-  <!-- Hidden Frame for silent background message sending -->
+  <!-- Hidden Frame for silent dispatch -->
   <iframe id="silentSender" name="silentSender" class="hidden"></iframe>
 
   <!-- Top Navigation Header -->
@@ -236,7 +236,7 @@
     function addDaysToDateTime(days) {
       const target = new Date();
       target.setDate(target.getDate() + parseInt(days));
-      target.setHours(17, 0, 0, 0); // 5:00 PM closing default
+      target.setHours(17, 0, 0, 0);
       const yyyy = target.getFullYear();
       const mm = String(target.getMonth() + 1).padStart(2, '0');
       const dd = String(target.getDate()).padStart(2, '0');
@@ -295,19 +295,14 @@
       return `${header}\n━━━━━━━━━━━━━━━━━━━━\n📌 *ఆదేశాలు / విచారణ నివేదిక కొరకు*\n\n👤 *సిబ్బంది పేరు:* ${item.staffName}\n📂 *అర్జీ రకం :* ${item.appType}\n👤 *అర్జిదారుని పేరు :* ${item.applicantName}\n📄 *రిఫరెన్స్ నంబర్:* ${item.refNo}\n📅 *పరిష్కార గడువు తేదీ:* ${item.dueDate.replace('T', ' ')}\n\n⚠️ *గమనిక:* నిర్ణీత గడువులోగా క్షేత్రస్థాయి విచారణ పూర్తి చేసి నివేదిక సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
     }
 
-    // Direct Background Dispatch (WhatsApp app screen bypass / Cloud API trigger)
+    // Direct Dispatch
     function dispatchWhatsAppSilently(phone, text) {
       const encodedText = encodeURIComponent(text);
       const url = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodedText}`;
-      
-      // Iframe silently triggers dispatch without navigating user away
       const iframe = document.getElementById('silentSender');
-      iframe.src = url;
-
-      // In modern browsers, fallback directly if popup allowed, or show confirmation toast
-      setTimeout(() => {
-        // Keeps user inside the application smoothly
-      }, 500);
+      if (iframe) {
+        iframe.src = url;
+      }
     }
 
     function getFormData() {
@@ -355,35 +350,47 @@
       }
     }
 
-    // Send Reminder Action
-    async function sendReminder(docId, phone, itemData) {
+    // Reminder Fix: Index dwara lookup
+    async function triggerReminderByIndex(index) {
+      const item = records[index];
+      if (!item || !item.docId) {
+        alert("రికార్డు గుర్తించబడలేదు.");
+        return;
+      }
+
       const now = new Date().toISOString();
       try {
-        await db.collection("notices").doc(docId).update({
+        await db.collection("notices").doc(item.docId).update({
           lastReminderAt: now
         });
-        dispatchWhatsAppSilently(phone, generateMessageText(itemData, true));
+        dispatchWhatsAppSilently(item.staffPhone, generateMessageText(item, true));
         alert('సిబ్బందికి రిమైండర్ మెసేజ్ పంపబడింది!');
       } catch (err) {
         alert("రిమైండర్ విఫలమైంది: " + err.message);
       }
     }
 
-    // Toggle Status
-    async function toggleStatus(docId, currentStatus) {
-      const nextStatus = currentStatus === 'పెండింగ్' ? 'నివేదిక అందింది' : 'పెండింగ్';
+    // Status Toggle Fix
+    async function toggleStatusByIndex(index) {
+      const item = records[index];
+      if (!item || !item.docId) return;
+
+      const nextStatus = item.status === 'పెండింగ్' ? 'నివేదిక అందింది' : 'పెండింగ్';
       try {
-        await db.collection("notices").doc(docId).update({ status: nextStatus });
+        await db.collection("notices").doc(item.docId).update({ status: nextStatus });
       } catch (err) {
         alert("స్టేటస్ అప్‌డేట్ విఫలమైంది: " + err.message);
       }
     }
 
-    // Delete Record
-    async function deleteRecord(docId) {
+    // Delete Record Fix
+    async function deleteRecordByIndex(index) {
+      const item = records[index];
+      if (!item || !item.docId) return;
+
       if (confirm('ఈ రికార్డును శాశ్వతంగా తొలగించాలనుకుంటున్నారా?')) {
         try {
-          await db.collection("notices").doc(docId).delete();
+          await db.collection("notices").doc(item.docId).delete();
         } catch (err) {
           alert("తొలగింపు విఫలమైంది: " + err.message);
         }
@@ -415,7 +422,7 @@
       renderTable(filtered);
     }
 
-    // Precise Countdown (Days, Hours, Minutes)
+    // Countdown calculation
     function calculatePreciseRemaining(dueDateTimeStr) {
       const now = new Date().getTime();
       const due = new Date(dueDateTimeStr).getTime();
@@ -438,7 +445,7 @@
       return { text: `${days} రోజుల ${hours} గం. ${mins} నిమి.`, isExpired: false };
     }
 
-    // Render Table UI with Rich Badges and Minute Tracking
+    // Render Table UI (Bugs fixed)
     function renderTable(dataToRender) {
       const tbody = document.getElementById('dispatchTableBody');
       const stats = document.getElementById('statsCount');
@@ -450,7 +457,7 @@
         return;
       }
 
-      dataToRender.forEach(r => {
+      dataToRender.forEach((r, idx) => {
         const countdown = calculatePreciseRemaining(r.dueDate);
         const isClosed = r.status === 'నివేదిక అందింది';
 
@@ -489,18 +496,18 @@
           </td>
           <td class="px-5 py-4">${badge}</td>
           <td class="px-5 py-4">
-            <button onclick="toggleStatus('${r.docId}', '${r.status}')" class="text-xs font-bold px-3 py-1.5 rounded-xl border shadow-sm transition ${isClosed ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'}">
+            <button onclick="toggleStatusByIndex(${idx})" class="text-xs font-bold px-3 py-1.5 rounded-xl border shadow-sm transition ${isClosed ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'}">
               ${r.status}
             </button>
           </td>
           <td class="px-5 py-4 text-right">
             <div class="inline-flex items-center gap-1.5">
               ${!isClosed ? `
-                <button onclick="sendReminder('\${r.docId}', '${r.staffPhone}',${JSON.stringify(r).replace(/"/g, '&quot;')})" class="p-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg border border-amber-200 transition" title="రిమైండర్ పంపు">
+                <button onclick="triggerReminderByIndex(\${idx})" class="p-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg border border-amber-200 transition" title="రిమైండర్ పంపు">
                   <i data-lucide="bell-ring" class="w-4 h-4"></i>
                 </button>
               ` : ''}
-              <button onclick="deleteRecord('${r.docId}')" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition" title="తొలగించు">
+              <button onclick="deleteRecordByIndex(${idx})" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition" title="తొలగించు">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
             </div>
@@ -534,14 +541,14 @@
       document.body.removeChild(link);
     }
 
-    // Live Auto-Refresh every 60 seconds for minute countdowns
+    // Auto-refresh every 60s
     setInterval(() => {
       if (records.length > 0) {
         renderTable(records);
       }
     }, 60000);
 
-    // Initialize Default States
+    // Initialize
     window.addEventListener('DOMContentLoaded', () => {
       applyPresetDays(3);
       listenToRealtimeUpdates();
