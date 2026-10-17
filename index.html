@@ -22,9 +22,6 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
 
-  <!-- Silent Dispatch Frame -->
-  <iframe id="silentSender" name="silentSender" class="hidden"></iframe>
-
   <!-- Password Security Modal Overlay -->
   <div id="authOverlay" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center border border-slate-200">
@@ -45,7 +42,7 @@
           <i data-lucide="lock-open" class="w-4 h-4"></i> అన్‌లాక్ చేయండి
         </button>
       </form>
-      <p class="text-[11px] text-slate-400 mt-4">డిఫాల్ట్ పిన్: <span class="font-mono font-bold text-slate-600">1207</span></p>
+      <p class="text-[11px] text-slate-400 mt-4">డిఫాల్ట్ పిన్: <span class="font-mono font-bold text-slate-600">1234</span></p>
     </div>
   </div>
 
@@ -190,7 +187,7 @@
           <!-- Form Submission Actions -->
           <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-slate-100">
             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-sm font-bold px-7 py-3 rounded-2xl shadow-lg shadow-emerald-700/20 active:scale-95 transition">
-              <i data-lucide="send" class="w-4 h-4"></i> ఆదేశాలు జారీ చేయండి & క్లౌడ్‌లో సేవ్ చేయండి
+              <i data-lucide="message-square" class="w-4 h-4"></i> WhatsApp లో పంపు & సేవ్ చేయి
             </button>
           </div>
         </form>
@@ -239,7 +236,7 @@
               </tr>
             </thead>
             <tbody id="dispatchTableBody" class="divide-y divide-slate-100 font-medium">
-              <!-- Dynamically populated via Firestore snapshot -->
+              <!-- Rendered via JS -->
             </tbody>
           </table>
         </div>
@@ -249,7 +246,6 @@
   </div>
 
   <script>
-    // Configuration Pin
     const SYSTEM_PIN = "1234";
 
     function checkAuth() {
@@ -285,7 +281,7 @@
       location.reload();
     }
 
-    // Firebase Project Configuration
+    // Firebase Config (mee mropvg credentials)
     const firebaseConfig = {
       apiKey: "AIzaSyAPaIA-OPJnKH1X2XZKXG3DF4U-J6UY60Y",
       authDomain: "mropvg-d2e6d.firebaseapp.com",
@@ -300,7 +296,6 @@
 
     let records = [];
 
-    // Date & Time Calculation
     function addDaysToDateTime(days) {
       const target = new Date();
       target.setDate(target.getDate() + parseInt(days));
@@ -326,7 +321,6 @@
       }
     }
 
-    // Contact Picker
     async function pickPhoneContact() {
       if ('contacts' in navigator && 'ContactsManager' in window) {
         try {
@@ -362,13 +356,11 @@
       return `${header}\n━━━━━━━━━━━━━━━━━━━━\n📌 *ఆదేశాలు / విచారణ నివేదిక కొరకు*\n\n👤 *సిబ్బంది పేరు:* ${item.staffName}\n📂 *అర్జీ రకం :* ${item.appType}\n👤 *అర్జిదారుని పేరు :* ${item.applicantName}\n📄 *రిఫరెన్స్ నంబర్:* ${item.refNo}\n📅 *పరిష్కార గడువు తేదీ:* ${item.dueDate.replace('T', ' ')}\n\n⚠️ *గమనిక:* నిర్ణీత గడువులోగా క్షేత్రస్థాయి విచారణ పూర్తి చేసి నివేదిక సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
     }
 
-    function dispatchWhatsAppSilently(phone, text) {
+    // Direct WhatsApp Open Link trigger
+    function openWhatsAppDirectly(phone, text) {
       const encodedText = encodeURIComponent(text);
       const url = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodedText}`;
-      const iframe = document.getElementById('silentSender');
-      if (iframe) {
-        iframe.src = url;
-      }
+      window.open(url, '_blank');
     }
 
     function getFormData() {
@@ -406,10 +398,9 @@
 
       try {
         await db.collection("notices").add(item);
-        dispatchWhatsAppSilently(item.staffPhone, generateMessageText(item));
+        openWhatsAppDirectly(item.staffPhone, generateMessageText(item));
         document.getElementById('dispatchForm').reset();
         applyPresetDays(3);
-        alert('ఆదేశాలు జారీ చేయబడ్డాయి మరియు క్లౌడ్‌లో సేవ్ అయ్యాయి!');
       } catch (err) {
         console.error("Save Error:", err);
         alert("క్లౌడ్‌లో సేవ్ చేయడం విఫలమైంది: " + err.message);
@@ -428,8 +419,7 @@
         await db.collection("notices").doc(item.docId).update({
           lastReminderAt: now
         });
-        dispatchWhatsAppSilently(item.staffPhone, generateMessageText(item, true));
-        alert('సిబ్బందికి రిమైండర్ మెసేజ్ పంపబడింది!');
+        openWhatsAppDirectly(item.staffPhone, generateMessageText(item, true));
       } catch (err) {
         alert("రిమైండర్ విఫలమైంది: " + err.message);
       }
