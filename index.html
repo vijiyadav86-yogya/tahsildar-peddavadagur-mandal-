@@ -86,7 +86,7 @@
             </div>
             <h2 class="text-base font-bold text-slate-800">సిబ్బందికి ఆదేశాల జారీ & విచారణ కేటాయింపు</h2>
           </div>
-          <span class="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200">ఆటోమేటిక్ ట్రాకింగ్</span>
+          <span class="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200">One-Tap WhatsApp Notice</span>
         </div>
 
         <form id="dispatchForm" class="p-6 md:p-8 space-y-6" onsubmit="event.preventDefault(); sendNotice();">
@@ -98,10 +98,11 @@
               <div class="relative">
                 <select id="appType" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition appearance-none font-medium shadow-sm">
                   <option value="ROR / మ్యుటేషన్">ROR / మ్యుటేషన్</option>
-                  <option value="PGRS (జగనన్నకు చెబుదాం / మీసేవ)">PGRS అర్జీ</option>
+                  <option value="PGRS (PGRS/ మీసేవ)">PGRS అర్జీ</option>
                   <option value="మండల అప్లికేషన్">మండల అప్లికేషన్</option>
-                  <option value="పట్టాదారు పాస్ పుస్తకం">పట్టాదారు పాస్ పుస్తకం</option>
+                  <option value="APSEVA">APSEVA</option>
                   <option value="భూ సరిహద్దుల వివాదం (F-Line)">భూ సరిహద్దుల వివాదం (F-Line)</option>
+                  <option value="Resurvey(Joint LPM)">Resurvey(Joint LPM)</option>
                   <option value="ఇతరములు">ఇతరములు</option>
                 </select>
                 <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3.5 top-4 pointer-events-none"></i>
@@ -112,7 +113,7 @@
             <div>
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">అర్జిదారుని పేరు (Applicant Name)</label>
               <div class="relative">
-                <input type="text" id="applicantName" placeholder="ఉదా: జి. విజయ్" required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
+                <input type="text" id="applicantName" placeholder="ఉదా:      " required class="w-full bg-slate-50/80 border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition font-medium shadow-sm">
                 <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
               </div>
             </div>
@@ -187,7 +188,7 @@
           <!-- Form Submission Actions -->
           <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-slate-100">
             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-sm font-bold px-7 py-3 rounded-2xl shadow-lg shadow-emerald-700/20 active:scale-95 transition">
-              <i data-lucide="message-square" class="w-4 h-4"></i> WhatsApp లో పంపు & సేవ్ చేయి
+              <i data-lucide="send" class="w-4 h-4"></i> WhatsApp లో ఆదేశాలు పంపు & సేవ్ చేయి
             </button>
           </div>
         </form>
@@ -281,7 +282,7 @@
       location.reload();
     }
 
-    // Firebase Config (mee mropvg credentials)
+    // Firebase Config (మీ mropvg ప్రాజెక్ట్)
     const firebaseConfig = {
       apiKey: "AIzaSyAPaIA-OPJnKH1X2XZKXG3DF4U-J6UY60Y",
       authDomain: "mropvg-d2e6d.firebaseapp.com",
@@ -352,14 +353,13 @@
     }
 
     function generateMessageText(item, isReminder = false) {
-      const header = isReminder ? `⚠️ *రిమైండర్ - తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*` : `*తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*`;
+      const header = isReminder ? `⚠️ *రిమైండర్ - తహసీల్దార్ వారి  కార్యాలయం, పెద్దవడుగూరు*` : `*తహసీల్దార్ కార్యాలయం, పెద్దవడుగూరు*`;
       return `${header}\n━━━━━━━━━━━━━━━━━━━━\n📌 *ఆదేశాలు / విచారణ నివేదిక కొరకు*\n\n👤 *సిబ్బంది పేరు:* ${item.staffName}\n📂 *అర్జీ రకం :* ${item.appType}\n👤 *అర్జిదారుని పేరు :* ${item.applicantName}\n📄 *రిఫరెన్స్ నంబర్:* ${item.refNo}\n📅 *పరిష్కార గడువు తేదీ:* ${item.dueDate.replace('T', ' ')}\n\n⚠️ *గమనిక:* నిర్ణీత గడువులోగా క్షేత్రస్థాయి విచారణ పూర్తి చేసి నివేదిక సమర్పించవలసిందిగా ఆదేశించడమైనది.`;
     }
 
-    // Direct WhatsApp Open Link trigger
-    function openWhatsAppDirectly(phone, text) {
-      const encodedText = encodeURIComponent(text);
-      const url = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodedText}`;
+    // Direct WhatsApp Dispatch (No setup needed for staff)
+    function dispatchToWhatsApp(phone, text) {
+      const url = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(text)}`;
       window.open(url, '_blank');
     }
 
@@ -398,7 +398,7 @@
 
       try {
         await db.collection("notices").add(item);
-        openWhatsAppDirectly(item.staffPhone, generateMessageText(item));
+        dispatchToWhatsApp(item.staffPhone, generateMessageText(item));
         document.getElementById('dispatchForm').reset();
         applyPresetDays(3);
       } catch (err) {
@@ -419,7 +419,7 @@
         await db.collection("notices").doc(item.docId).update({
           lastReminderAt: now
         });
-        openWhatsAppDirectly(item.staffPhone, generateMessageText(item, true));
+        dispatchToWhatsApp(item.staffPhone, generateMessageText(item, true));
       } catch (err) {
         alert("రిమైండర్ విఫలమైంది: " + err.message);
       }
@@ -591,6 +591,7 @@
       document.body.removeChild(link);
     }
 
+    // Auto update live timer every minute
     setInterval(() => {
       if (records.length > 0 && sessionStorage.getItem('tah_auth') === 'true') {
         renderTable(records);
